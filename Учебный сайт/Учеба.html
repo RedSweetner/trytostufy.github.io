@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Выбери предмет</title>
+<style>
+:root{--bg1:#fff3df;--bg2:#fcd4a4;--text:#3b1409;--card:rgba(255,251,244,.92);--hl:#ffeed6;--acc:#c2410c;--accb:#9a3412;--alg1:#7c3aed;--alg2:#a855f7;--chem1:#059669;--chem2:#0ea5e9;--shadow:rgba(120,53,15,.35);--glow:none;--gl:rgba(194,65,12,.25);--hf:"Yeseva One","Philosopher",Georgia,serif;--bf:"Manrope","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;--bat:#3b0764;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg1:#0b0512;--bg2:#2b1042;--text:#f6ecff;--card:rgba(28,16,44,.9);--hl:#34204d;--acc:#fb923c;--accb:#fdba74;--alg1:#7c3aed;--alg2:#d946ef;--chem1:#16a34a;--chem2:#65a30d;--shadow:rgba(0,0,0,.7);--glow:0 0 18px rgba(251,146,60,.55);--gl:rgba(251,146,60,.6);--hf:"Yeseva One","Philosopher",Georgia,serif;--bat:#000}}
+:root[data-theme=dark]{--bg1:#0b0512;--bg2:#2b1042;--text:#f6ecff;--card:rgba(28,16,44,.9);--hl:#34204d;--acc:#fb923c;--accb:#fdba74;--alg1:#7c3aed;--alg2:#d946ef;--chem1:#16a34a;--chem2:#65a30d;--shadow:rgba(0,0,0,.7);--glow:0 0 18px rgba(251,146,60,.55);--gl:rgba(251,146,60,.6);--hf:"Yeseva One","Philosopher",Georgia,serif;--bat:#000}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%}
+body{margin:0;height:100%;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg1));background-size:300% 300%;animation:bg 14s ease infinite;color:var(--text);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;overflow:hidden}
+#leaves{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.leaf{position:absolute;top:-60px;width:var(--s);height:var(--s);color:var(--c);opacity:.85;animation:fall var(--d) linear var(--delay) infinite}
+.leaf svg{width:100%;height:100%;display:block;animation:sway var(--sw) ease-in-out var(--delay) infinite alternate}
+@keyframes fall{to{transform:translateY(calc(100vh + 120px))}}
+@keyframes sway{from{transform:translateX(-40px) rotate(-60deg)}to{transform:translateX(40px) rotate(80deg)}}
+@keyframes bg{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+@keyframes fd{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}
+@keyframes fu{from{opacity:0;translate:0 30px}to{opacity:1;translate:0 0}}
+@keyframes fl{0%,100%{top:0}50%{top:-5px}}
+@keyframes sh{to{left:140%}}
+.view{position:absolute;inset:0;z-index:1;display:none;flex-direction:column;align-items:center;padding:14px 16px}
+.view.on{display:flex}
+#home{justify-content:center;text-align:center}
+h1{margin:0 0 44px;font-size:clamp(2rem,7vw,3.4rem);line-height:1.1;font-weight:800;letter-spacing:-.02em;animation:fd .8s ease both}
+.top{width:100%;max-width:760px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.top h2{margin:0;flex:1;font-size:clamp(1.2rem,4.5vw,1.8rem);text-align:center;padding-right:48px;animation:fd .6s ease both}
+.back{width:42px;height:42px;flex:none;border:0;border-radius:50%;font-size:1.4rem;color:#fff;background:linear-gradient(135deg,var(--alg1),var(--alg2));cursor:pointer;box-shadow:0 6px 14px -4px var(--shadow);transition:transform .2s}
+.back:hover{transform:scale(1.1) translateX(-2px)}
+.col{display:flex;flex-direction:column;align-items:center;gap:20px;width:100%}
+#list{max-width:520px;flex:1;overflow-y:auto;padding:6px 4px 24px;gap:14px}
+.btn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:14px;width:100%;max-width:380px;padding:18px 28px;border-radius:18px;color:#fff;text-decoration:none;font-size:clamp(1.15rem,4.5vw,1.45rem);font-weight:700;letter-spacing:.02em;box-shadow:0 12px 28px -8px var(--shadow);transition:transform .25s,box-shadow .25s;opacity:0;cursor:pointer;animation:fu .6s ease forwards;animation-delay:calc(var(--i,0)*.07s + .15s);-webkit-tap-highlight-color:transparent}
+#home .btn{animation:fu .7s ease forwards,fl 4s ease-in-out infinite;animation-delay:calc(var(--i)*.2s + .3s),calc(var(--i)*.6s + 1s)}
+.alg{background:linear-gradient(135deg,var(--alg1),var(--alg2))}
+.chem{background:linear-gradient(135deg,var(--chem1),var(--chem2))}
+.btn svg{width:1.9em;height:1.9em;flex:none;transition:transform .4s}
+.btn::after{content:"";position:absolute;top:0;left:-75%;width:50%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg)}
+.btn:hover{transform:translateY(-5px) scale(1.04);box-shadow:0 20px 36px -8px var(--shadow)}
+.btn:hover::after{animation:sh .8s}
+.btn:hover svg{transform:rotate(-12deg) scale(1.15)}
+.btn:active{transform:scale(.97)}
+.btn.t{justify-content:flex-start;max-width:440px;padding:14px 20px;font-size:clamp(1rem,4vw,1.2rem);text-align:left}
+.btn.t b{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:50%;background:rgba(255,255,255,.25)}
+#vp{flex:1;width:100%;max-width:760px;min-height:0;overflow:hidden}
+#tr{display:flex;height:100%;transition:transform .4s ease}
+.sl{min-width:100%;height:100%;overflow-y:auto;padding:2px 4px 10px}
+.card{background:var(--card);backdrop-filter:blur(6px);border-radius:18px;padding:18px 20px;line-height:1.6;box-shadow:0 8px 24px -10px var(--shadow)}
+.card h3{margin:0 0 8px;font-size:1.25rem}
+.card p{margin:8px 0}
+.ex{background:var(--hl);border-radius:12px;padding:10px 14px;margin:10px 0}
+.fig{display:block;width:100%;max-width:340px;margin:10px auto}
+table{border-collapse:collapse;width:100%;margin:8px 0}
+td{border-bottom:1px solid rgba(128,128,128,.3);padding:6px 4px}
+.nav{display:flex;align-items:center;gap:16px;padding:10px 0 4px}
+.nav button{width:46px;height:46px;border:0;border-radius:50%;font-size:1.4rem;color:#fff;background:linear-gradient(135deg,var(--alg1),var(--alg2));cursor:pointer;transition:transform .2s}
+.nav button:hover{transform:scale(1.12)}
+#dots{display:flex;gap:7px}
+#dots i{width:9px;height:9px;border-radius:50%;background:rgba(128,128,128,.45);transition:.3s}
+#dots i.a{width:24px;border-radius:6px;background:var(--alg1)}
+#cv{width:100%;height:min(340px,48vh);border-radius:14px;background:#fff;touch-action:none;cursor:grab;display:block}
+.in{width:100%;padding:11px 14px;font-size:1.05rem;border-radius:12px;border:2px solid var(--alg1);background:var(--card);color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chips button,.sm{border:0;border-radius:20px;padding:6px 12px;background:var(--hl);color:var(--text);cursor:pointer;font-size:.95rem}
+#el{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.el{background:var(--hl);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:10px;line-height:1.2;font-size:.9rem}
+.el b{font-size:1.6rem;color:var(--chem1);min-width:2ch}
+.hid .nm{visibility:hidden}
+@media(min-width:1024px){.btn{max-width:480px;padding:24px 36px;border-radius:22px}h1{margin-bottom:56px}.card{padding:24px 28px;font-size:1.08rem}}
+@media(max-width:480px){.btn{padding:16px 20px;border-radius:16px}h1{margin-bottom:32px}.card{padding:14px 15px}}
+@media(max-height:480px){h1{margin-bottom:16px}.col{gap:10px}.btn{padding:10px 20px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.btn{opacity:1}#leaves{display:none}}
+
+body{font-family:var(--bf)}
+h1,.top h2,.card h3{font-family:var(--hf);font-weight:400;letter-spacing:.03em}
+h1{text-shadow:var(--glow);font-size:clamp(2.4rem,9vw,4.2rem)}
+.top h2{color:var(--acc);text-shadow:var(--glow)}
+.card{font-size:1.04rem;line-height:1.75;border:1px solid rgba(251,146,60,.25)}
+.card h3{font-size:clamp(1.4rem,5vw,1.9rem);color:var(--acc);margin:0 0 12px;padding-bottom:8px;position:relative}
+.card h3::after{content:"";position:absolute;left:0;bottom:0;width:70px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--acc),transparent)}
+.card b{color:var(--accb)}
+.ex{border-left:4px solid var(--acc);line-height:1.95}
+.warn{border-left-color:#ef4444}.warn::before{content:"⚠️ "}
+.tip::before{content:"💡 "}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;line-height:1.3;font-size:.95em}
+.fr>span{padding:0 5px}.fr>span:first-child{border-bottom:1.6px solid currentColor}
+.rt{white-space:nowrap}.rv{border-top:1.6px solid currentColor;padding:0 2px;margin-left:1px}
+td:first-child{font-weight:700}
+.leaf span{display:block;font-size:var(--s);line-height:1;animation:sway var(--sw) ease-in-out var(--delay) infinite alternate}
+.deco{display:none;position:fixed;pointer-events:none;z-index:0}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .deco{display:block}}
+:root[data-theme=dark] .deco{display:block}
+.moon{top:5%;right:6%;width:clamp(50px,9vw,90px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fffbe6,#fde68a 60%,#f59e0b);box-shadow:0 0 40px 12px rgba(253,230,138,.35),0 0 120px 40px rgba(253,230,138,.15);animation:glow 5s ease-in-out infinite alternate}
+.pump{bottom:8px;left:8px;width:clamp(56px,10vw,100px);filter:drop-shadow(0 0 12px rgba(251,146,60,.7));animation:bob 3s ease-in-out infinite}
+.bat{top:12%;left:-80px;width:48px;animation:fly 16s linear infinite,flap .25s ease-in-out infinite alternate}
+.bat+.bat{top:28%;width:34px;animation-duration:22s,.2s;animation-delay:-9s,0s}
+@keyframes fly{0%{translate:0 0}25%{translate:30vw -25px}50%{translate:60vw 15px}75%{translate:90vw -20px}100%{translate:calc(100vw + 160px) 0}}
+@keyframes flap{to{transform:scaleY(.55)}}
+@keyframes glow{to{box-shadow:0 0 60px 20px rgba(253,230,138,.5),0 0 150px 50px rgba(253,230,138,.2)}}
+@keyframes bob{50%{transform:translateY(-6px) rotate(2deg)}}
+#th{position:fixed;z-index:6;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border:0;border-radius:50%;font-size:1.5rem;background:var(--card);box-shadow:0 6px 16px -4px var(--shadow);cursor:pointer;transition:transform .25s}
+#th:hover{transform:rotate(20deg) scale(1.1)}
+
+.vl{display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;margin:0 2px;vertical-align:bottom}
+.vl i{font-style:normal;font-size:.7em;font-weight:800;color:var(--acc)}
+.tabs{display:flex;gap:8px;margin-bottom:10px;width:100%;max-width:760px}
+.tabs button{flex:1;border:0;border-radius:14px;padding:11px;font:700 1rem var(--bf);color:var(--text);background:var(--card);cursor:pointer;transition:.2s}
+.tabs button.on{background:linear-gradient(135deg,var(--alg1),var(--alg2));color:#fff;box-shadow:0 6px 14px -4px var(--shadow)}
+#qb{flex:1;width:100%;max-width:760px;min-height:0;overflow-y:auto;padding:2px 4px 70px}
+.qh{font-weight:800;color:var(--acc);margin-bottom:6px}
+.bar{height:8px;border-radius:6px;background:rgba(128,128,128,.25);overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),#facc15);border-radius:6px;transition:width .4s}
+.qq{font-size:1.15rem;font-weight:700;margin:6px 0 14px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid rgba(128,128,128,.35);background:var(--hl);color:var(--text);font:600 1rem var(--bf);cursor:pointer;transition:transform .15s,background .25s,border-color .25s}
+.opt:hover:not(.lock){transform:translateX(4px);border-color:var(--acc)}
+.opt b{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff}
+.opt.ok{background:#16a34a;border-color:#16a34a;color:#fff;animation:pop .4s}
+.opt.no{background:#dc2626;border-color:#dc2626;color:#fff;animation:shake .4s}
+.opt.ok b,.opt.no b{background:rgba(255,255,255,.3)}
+.opt.lock{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border-radius:14px;font-weight:800;font-size:1.15rem;animation:pop .4s}
+.fb.ok{background:rgba(22,163,74,.2);color:#16a34a}
+.fb.no{background:rgba(220,38,38,.18);color:#ef4444}
+.nx2{display:block;margin:12px 0 0 auto;border:0;border-radius:20px;padding:10px 22px;font:700 1rem var(--bf);color:#fff;background:linear-gradient(135deg,var(--alg1),var(--alg2));cursor:pointer;transition:transform .2s}
+.nx2:hover{transform:scale(1.06)}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.task{margin-bottom:14px}
+.th{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.th span{font-family:var(--hf);font-size:1.35rem;color:var(--acc)}
+.th em{font-style:normal;font-size:.85rem;font-weight:700;opacity:.85}
+.solb{background:linear-gradient(135deg,var(--acc),#f59e0b)!important;color:#fff!important;font-weight:700;padding:8px 16px!important}
+.sol{margin-top:10px;padding:12px 14px;border-radius:12px;background:var(--hl);border-left:4px solid var(--acc)}
+.sol[hidden]{display:none}
+.sol:not([hidden]){animation:pop .35s}
+.ans{margin-top:8px;font-weight:700}
+mark{background:linear-gradient(transparent 15%,#facc15 15%);color:#1c1917;padding:0 5px;border-radius:4px;font-weight:800}
+.note{opacity:.8;font-size:.88rem;margin:0 0 10px}
+.sec{font-family:var(--hf);font-weight:400;color:var(--acc);margin:20px 0 8px;font-size:1.6rem}
+.res{text-align:center}
+.res .big{font-size:3.2rem;font-weight:800;color:var(--acc)}
+.res .nx2{margin:10px auto}
+
+h1{font-size:clamp(2.2rem,8vw,3.8rem);letter-spacing:.01em;background:linear-gradient(90deg,var(--acc),var(--accb));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 3px 12px var(--gl))}
+.top h2{letter-spacing:.01em}
+.btn.t b{font-size:1.2rem}
+.btn.t{font-weight:700}
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:10px 0}
+.ag .el b{font-size:1.3rem}
+.task.hc{border:1px solid rgba(239,68,68,.55);background:linear-gradient(135deg,var(--card),rgba(239,68,68,.14))}
+.hc .th span{color:#ef4444}
+.gbox{margin-top:8px}
+.frow{display:flex;align-items:center;gap:8px;margin:6px 0}
+.dot{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.7);flex:none;cursor:pointer;box-shadow:0 0 10px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.dot:hover{transform:scale(1.15)}
+.dot.off{opacity:.25}
+.fl{font-family:var(--hf);color:var(--acc);font-size:1.15rem}
+.fi{flex:1;min-width:0;width:auto;font-family:var(--bf);font-weight:600}
+.fi.bad{border-color:#ef4444;background:rgba(239,68,68,.12)}
+.rm{border:0;background:none;color:var(--text);font-size:1.1rem;cursor:pointer;opacity:.55;padding:4px 6px}
+.rm:hover{opacity:1;color:#ef4444}
+.gbar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.gbar button,.keys button{border:0;border-radius:10px;padding:7px 12px;background:var(--hl);color:var(--text);font:700 .95rem var(--bf);cursor:pointer;transition:transform .15s,background .2s}
+.gbar button:hover,.keys button:hover,.chips button:hover{transform:translateY(-2px);background:var(--acc);color:#fff}
+.gbar #fadd{background:linear-gradient(135deg,var(--alg1),var(--alg2));color:#fff}
+.keys{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.keys button{min-width:36px;padding:6px 9px;font-family:Georgia,serif;font-style:italic}
+#cv{height:min(380px,54vh);border:2px solid rgba(251,146,60,.35);box-shadow:0 10px 30px -12px var(--shadow)}
+.gro{margin-top:8px;font-weight:700;font-size:.92rem;min-height:1.5em;display:flex;flex-wrap:wrap;gap:4px 14px}
+</style>
+</head>
+<body>
+<div id="leaves" aria-hidden="true"></div>
+<div class="deco moon"></div>
+<svg class="deco bat" viewBox="0 0 50 22"><path fill="var(--bat)" d="M25 10Q18 0 0 4Q8 8 10 16Q16 11 20 16Q25 12 25 18Q25 12 30 16Q34 11 40 16Q42 8 50 4Q32 0 25 10z"/></svg>
+<svg class="deco bat" viewBox="0 0 50 22"><path fill="var(--bat)" d="M25 10Q18 0 0 4Q8 8 10 16Q16 11 20 16Q25 12 25 18Q25 12 30 16Q34 11 40 16Q42 8 50 4Q32 0 25 10z"/></svg>
+<svg class="deco pump" viewBox="0 0 100 90"><path d="M50 18q4-14 16-14" stroke="#4d7c0f" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="30" cy="54" rx="26" ry="32" fill="#ea580c"/><ellipse cx="70" cy="54" rx="26" ry="32" fill="#ea580c"/><ellipse cx="50" cy="54" rx="22" ry="34" fill="#f97316"/><path d="M33 46l9 13H24zM67 46l9 13H58z" fill="#fde047"/><path d="M30 70q20 16 40 0l-6-4-6 6-8-6-8 6-6-6z" fill="#fde047"/></svg>
+<button id="th" aria-label="Сменить тему"></button>
+
+<section id="home" class="view on">
+  <h1>Выбери предмет</h1>
+  <nav class="col">
+    <a class="btn alg" style="--i:0" data-go="alg">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18l16 20M22 18L6 38"/><path d="M28 12c0-3 2-5 5-5s5 2 5 4.5c0 2-1.5 3.5-3.5 5L28 21h10"/></svg>Алгебра</a>
+    <a class="btn chem" style="--i:1" data-go="chem">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5h12M20 5v13L8 38a3.5 3.5 0 0 0 3 5.5h26A3.5 3.5 0 0 0 40 38L28 18V5"/><path d="M13 31h22"/><circle cx="21" cy="37" r="1.8" fill="currentColor" stroke="none"/><circle cx="28" cy="35" r="1.3" fill="currentColor" stroke="none"/></svg>Химия</a>
+  </nav>
+</section>
+
+<section id="sub" class="view">
+  <div class="top"><button class="back" aria-label="Назад">←</button><h2>Выбери тему</h2></div>
+  <div id="list" class="col"></div>
+</section>
+
+<section id="tm" class="view">
+  <div class="top"><button class="back" aria-label="Назад">←</button><h2 id="tmt"></h2></div>
+  <div id="tml" class="col" style="margin-top:30px"></div>
+</section>
+
+<section id="qz" class="view">
+  <div class="top"><button class="back" aria-label="Назад">←</button><h2 id="qzt"></h2></div>
+  <div class="tabs"><button data-tab="q" class="on">📝 Тест</button><button data-tab="w">✍️ Задания</button></div>
+  <div id="qb"></div>
+</section>
+
+<section id="top" class="view">
+  <div class="top"><button class="back" aria-label="Назад">←</button><h2 id="tt"></h2></div>
+  <div id="vp"><div id="tr"></div></div>
+  <div class="nav"><button id="pv" aria-label="Предыдущая">‹</button><div id="dots"></div><button id="nx" aria-label="Следующая">›</button></div>
+</section>
+
+<script>
+// ---------- Картинки (SVG) ----------
+var F='<svg class=fig viewBox="',S=' fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"';
+var T=function(x,y,t){return '<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="currentColor" stroke="none" font-size="12" font-family="sans-serif">'+t+'</text>'};
+var IMG={
+glass:F+'0 0 240 110"'+S+'><path d="M40 8h20M44 8v24L24 76a5 5 0 0 0 5 8h42a5 5 0 0 0 5-8L56 32V8"/><path d="M30 64h40" stroke="#10b981"/><path d="M110 12v62q0 10 10 10h30q10 0 10-10V12z"/><path d="M111 48h48v26q0 9-10 9h-28q-10 0-10-9z" fill="#06b6d4" fill-opacity=".5" stroke="none"/><path d="M200 10v64a10 10 0 0 0 20 0V10z"/><path d="M200 44h20v30a10 10 0 0 1-20 0z" fill="#8b5cf6" fill-opacity=".5" stroke="none"/>'+T(50,102,'колба')+T(135,102,'стакан')+T(210,102,'пробирка')+'</svg>',
+mix:F+'0 0 240 120"'+S+'><path d="M25 10v70q0 10 10 10h40q10 0 10-10V10z"/><path d="M26 35h58v45q0 9-10 9H36q-10 0-10-9z" fill="#06b6d4" fill-opacity=".45" stroke="none"/><path d="M145 10v70q0 10 10 10h40q10 0 10-10V10z"/><path d="M146 35h58v45q0 9-10 9h-38q-10 0-10-9z" fill="#06b6d4" fill-opacity=".2" stroke="none"/><g fill="#a16207" stroke="none"><circle cx="160" cy="82" r="3"/><circle cx="172" cy="84" r="3"/><circle cx="184" cy="81" r="3"/><circle cx="195" cy="84" r="3"/><circle cx="166" cy="72" r="2.5"/><circle cx="188" cy="73" r="2.5"/></g>'+T(55,108,'однородная')+T(175,108,'неоднородная')+'</svg>',
+filt:F+'0 0 240 150"'+S+'><path d="M60 12h80L110 62v18H90V62z"/><path d="M70 22l30 36 30-36" stroke-dasharray="4 3" stroke="#a16207"/><circle cx="100" cy="86" r="2.5" fill="#06b6d4"/><circle cx="100" cy="96" r="2.5" fill="#06b6d4"/><path d="M70 105v30q0 6 6 6h48q6 0 6-6v-30"/><path d="M71 122h58v13q0 5-6 5H77q-6 0-6-5z" fill="#06b6d4" fill-opacity=".45" stroke="none"/>'+T(185,40,'осадок — на фильтре')+T(185,128,'фильтрат — в стакане')+'</svg>',
+dist:F+'0 0 260 130"'+S+'><path d="M30 40h18v20l18 38a4 4 0 0 1-4 6H16a4 4 0 0 1-4-6l18-38z"/><path d="M39 100h-20" stroke="#06b6d4"/><path d="M48 38h60l60 42" stroke-width="9" stroke="#06b6d4" stroke-opacity=".35"/><path d="M48 38h60l60 42"/><path d="M200 84v28q0 6 6 6h28q6 0 6-6V84"/><path d="M201 105h38v7q0 5-6 5h-26q-6 0-6-5z" fill="#06b6d4" fill-opacity=".5" stroke="none"/><path d="M26 124q4-10 8 0q4-10 8 0" stroke="#ef4444"/>'+T(120,25,'холодильник: пар → жидкость')+T(35,28,'кипит')+T(222,72,'чистая вода')+'</svg>',
+h2o:F+'0 0 160 100"'+S+' stroke-width="4"><path d="M80 40L36 74M80 40l44 34"/><circle cx="80" cy="36" r="24" fill="#ef4444" stroke="none"/><circle cx="36" cy="76" r="14" fill="#94a3b8" stroke="none"/><circle cx="124" cy="76" r="14" fill="#94a3b8" stroke="none"/><g fill="#fff" stroke="none" font-size="16" font-weight="700" text-anchor="middle" font-family="sans-serif"><text x="80" y="42">O</text><text x="36" y="82">H</text><text x="124" y="82">H</text></g></svg>',
+ch4:F+'0 0 160 110"'+S+' stroke-width="4"><path d="M80 55L35 25M80 55l45-30M80 55L38 88M80 55l42 33"/><circle cx="80" cy="55" r="20" fill="#475569" stroke="none"/><g fill="#94a3b8" stroke="none"><circle cx="35" cy="25" r="11"/><circle cx="125" cy="25" r="11"/><circle cx="38" cy="88" r="11"/><circle cx="122" cy="88" r="11"/></g><g fill="#fff" stroke="none" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif"><text x="80" y="60">C</text></g></svg>',
+atom:F+'0 0 160 112"'+S+' stroke-width="1.8"><ellipse cx="80" cy="56" rx="58" ry="20" stroke="#8b5cf6"/><ellipse cx="80" cy="56" rx="58" ry="20" transform="rotate(60 80 56)" stroke="#06b6d4"/><ellipse cx="80" cy="56" rx="58" ry="20" transform="rotate(-60 80 56)" stroke="#10b981"/><circle cx="80" cy="56" r="9" fill="#ef4444" stroke="none"/><g fill="#f59e0b" stroke="none"><circle cx="138" cy="56" r="4.5"/><circle cx="109" cy="106" r="4.5"/><circle cx="51" cy="106" r="4.5"/></g></svg>',
+co2:F+'0 0 200 70"'+S+' stroke-width="4"><path d="M45 31h110M45 39h110"/><circle cx="45" cy="35" r="18" fill="#ef4444" stroke="none"/><circle cx="100" cy="35" r="20" fill="#475569" stroke="none"/><circle cx="155" cy="35" r="18" fill="#ef4444" stroke="none"/><g fill="#fff" stroke="none" font-size="16" font-weight="700" text-anchor="middle" font-family="sans-serif"><text x="45" y="41">O</text><text x="100" y="41">C</text><text x="155" y="41">O</text></g></svg>',
+mag:F+'0 0 220 120"'+S+'><path d="M70 60V46a40 40 0 0 1 80 0v14" stroke-width="14" stroke="#ef4444"/><path d="M70 52v10M150 52v10" stroke-width="14" stroke="#94a3b8"/><g fill="#475569" stroke="none"><circle cx="66" cy="74" r="2.5"/><circle cx="74" cy="80" r="2.5"/><circle cx="70" cy="68" r="2.5"/><circle cx="148" cy="73" r="2.5"/><circle cx="154" cy="80" r="2.5"/></g><path d="M10 108h200" stroke-width="2"/><g fill="#d6b36a" stroke="none"><circle cx="40" cy="104" r="3"/><circle cx="55" cy="105" r="3"/><circle cx="105" cy="104" r="3"/><circle cx="170" cy="105" r="3"/><circle cx="190" cy="104" r="3"/></g>'+T(110,22,'железо притягивается')+T(110,10,'магнит')+T(110,100,'песок остаётся')+'</svg>',
+evap:F+'0 0 220 130"'+S+'><path d="M60 60h100q-10 28-50 28t-50-28z"/><path d="M64 68h92q-8 18-46 18t-46-18z" fill="#06b6d4" fill-opacity=".4" stroke="none"/><path d="M85 40q-6-8 0-16t0-14M110 40q-6-8 0-16t0-14M135 40q-6-8 0-16t0-14" stroke="#06b6d4"/><path d="M95 118q15-22 30 0z" fill="#ef4444" stroke="none"/><path d="M70 96l-10 24M150 96l10 24"/>'+T(110,8,'пар улетает')+T(110,128,'соль остаётся в чашке')+'</svg>',
+share:F+'0 0 260 90"'+S+'><rect x="10" y="32" width="26.6" height="30" rx="4" fill="#94a3b8" stroke="none"/><rect x="36.6" y="32" width="213.4" height="30" rx="4" fill="#ef4444" stroke="none"/><text x="145" y="52" text-anchor="middle" fill="#fff" stroke="none" font-size="13" font-weight="700" font-family="sans-serif">O — 88,9 %</text>'+T(23,24,'H')+T(23,80,'11,1 %')+T(150,82,'вода H₂O: доли элементов')+'</svg>',
+react:F+'0 0 280 150"'+S+'><text x="4" y="24" font-size="11" font-family="sans-serif" fill="currentColor" stroke="none">соединение</text><circle cx="120" cy="20" r="8" fill="#ef4444" stroke="none"/><text x="136" y="25" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">+</text><circle cx="152" cy="20" r="8" fill="#3b82f6" stroke="none"/><text x="180" y="25" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">→</text><circle cx="210" cy="20" r="8" fill="#ef4444" stroke="none"/><circle cx="226" cy="20" r="8" fill="#3b82f6" stroke="none"/><text x="4" y="62" font-size="11" font-family="sans-serif" fill="currentColor" stroke="none">разложение</text><circle cx="120" cy="58" r="8" fill="#ef4444" stroke="none"/><circle cx="136" cy="58" r="8" fill="#3b82f6" stroke="none"/><text x="168" y="63" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">→</text><circle cx="200" cy="58" r="8" fill="#ef4444" stroke="none"/><text x="218" y="63" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">+</text><circle cx="236" cy="58" r="8" fill="#3b82f6" stroke="none"/><text x="4" y="100" font-size="11" font-family="sans-serif" fill="currentColor" stroke="none">замещение</text><circle cx="90" cy="96" r="8" fill="#ef4444" stroke="none"/><text x="106" y="101" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">+</text><circle cx="124" cy="96" r="8" fill="#3b82f6" stroke="none"/><circle cx="140" cy="96" r="8" fill="#10b981" stroke="none"/><text x="170" y="101" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">→</text><circle cx="195" cy="96" r="8" fill="#ef4444" stroke="none"/><circle cx="211" cy="96" r="8" fill="#10b981" stroke="none"/><text x="228" y="101" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">+</text><circle cx="246" cy="96" r="8" fill="#3b82f6" stroke="none"/><text x="4" y="138" font-size="11" font-family="sans-serif" fill="currentColor" stroke="none">обмен</text><circle cx="70" cy="134" r="8" fill="#ef4444" stroke="none"/><circle cx="86" cy="134" r="8" fill="#3b82f6" stroke="none"/><text x="102" y="139" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">+</text><circle cx="120" cy="134" r="8" fill="#10b981" stroke="none"/><circle cx="136" cy="134" r="8" fill="#f59e0b" stroke="none"/><text x="166" y="139" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">→</text><circle cx="192" cy="134" r="8" fill="#ef4444" stroke="none"/><circle cx="208" cy="134" r="8" fill="#f59e0b" stroke="none"/><text x="225" y="139" font-size="14" font-family="sans-serif" text-anchor="middle" fill="currentColor" stroke="none">+</text><circle cx="243" cy="134" r="8" fill="#10b981" stroke="none"/><circle cx="259" cy="134" r="8" fill="#3b82f6" stroke="none"/></svg>'
+};
+// ---------- Элементы ----------
+var EL=[['Al','алюминий','алюминий'],['Ba','барий','барий'],['Fe','железо','феррум'],['K','калий','калий'],['Ca','кальций','кальций'],['Li','литий','литий'],['Mg','магний','магний'],['Mn','марганец','марганец'],['Cu','медь','купрум'],['Na','натрий','натрий'],['Zn','цинк','цинк'],['N','азот','эн'],['H','водород','аш'],['C','углерод','цэ'],['O','кислород','о'],['Si','кремний','силициум'],['S','сера','эс'],['Cl','хлор','хлор'],['F','фтор','фтор'],['Br','бром','бром'],['Ag','серебро','аргентум'],['Au','золото','аурум'],['Hg','ртуть','гидраргиум']];
+var ELH='<h3>Выучи знаки элементов</h3><p>Нажми «Скрыть названия» и проверь себя: назови элемент по знаку. Справа — как знак читается в формулах.</p><button class="sm" id="hd">Скрыть / показать названия</button><div id="el" style="margin-top:10px">'+EL.map(function(e){return '<div class="el"><b>'+e[0]+'</b><span class="nm">'+e[1]+'<br><small>«'+e[2]+'»</small></span></div>'}).join('')+'</div>';
+var GR='<h3>📊 Построй график сам</h3><p>Пиши функции прямо символами: x², √x, π, |x|. Каждая рисуется своим цветом на одной плоскости. Нажми на цветной кружок, чтобы скрыть линию.</p><div class="gbox nosw"><div id="frows"></div><div class="gbar"><button id="fadd">＋ Функция</button><button id="zi" title="Приблизить">＋</button><button id="zo" title="Отдалить">−</button><button id="zh" title="Сбросить">⌂</button></div><canvas id="cv"></canvas><div id="gro" class="gro"></div><div class="keys"><button data-k="x">x</button><button data-k="x²">x²</button><button data-k="x³">x³</button><button data-k="^">xⁿ</button><button data-k="√(">√</button><button data-k="π">π</button><button data-k="||">|x|</button><button data-k="(">(</button><button data-k=")">)</button><button data-k="+">+</button><button data-k="−">−</button><button data-k="·">·</button><button data-k="/">÷</button><button data-k="sin(">sin</button><button data-k="cos(">cos</button><button data-k="tan(">tan</button><button data-k="ln(">ln</button></div><div class="chips"><button data-f="x²">x²</button><button data-f="2x + 1">2x + 1</button><button data-f="1/x">1/x</button><button data-f="√x">√x</button><button data-f="|x|">|x|</button><button data-f="sin(x)">sin(x)</button><button data-f="x³ − 3x">x³ − 3x</button><button data-f="0,5x² − 2">0,5x² − 2</button></div></div>';
+// ---------- Темы ----------
+// Дроби: {числитель|знаменатель}, корень: √[подкоренное]
+var D={
+alg:[
+['Алгебраические выражения',[
+'<h3>🔤 Буквы вместо чисел</h3><p>Алгебра — это арифметика, в которой вместо чисел можно писать буквы. Так мы записываем правила, которые работают сразу для всех чисел.</p><div class=ex>3a + 2b — буквенное выражение<br>5·4 − 7 — числовое выражение</div><p>Буква — это «коробка», в которую можно положить любое число.</p>',
+'<h3>🧮 Значение выражения</h3><p>Подставь числа вместо букв и посчитай.</p><div class=ex>a = 2, b = 5<br>3a + 2b = 3·2 + 2·5 = 6 + 10 = <b>16</b></div><div class="ex warn">На нуль делить нельзя! Выражение {5|x − 3} не имеет смысла при x = 3.</div>',
+'<h3>📐 Формулы</h3><p>Формула — равенство, в котором одна величина выражена через другие.</p><table><tr><td>s = v·t</td><td>путь = скорость · время</td></tr><tr><td>P = 2(a + b)</td><td>периметр прямоугольника</td></tr><tr><td>S = a·b</td><td>площадь прямоугольника</td></tr><tr><td>v = {s|t}</td><td>скорость</td></tr></table><div class=ex>s = 180 км, t = 3 ч → v = {180|3} = <b>60 км/ч</b></div>',
+'<h3>🔁 Порядок действий и упрощение</h3><p>Сначала скобки, потом степень, затем × и ÷, в конце + и −.</p><div class=ex>2 + 3·4² = 2 + 3·16 = <b>50</b></div><p><b>Упростить</b> — значит привести подобные слагаемые: 5a + 3a − 2a = <b>6a</b>.</p><div class="ex tip">Выражения, равные при любых значениях букв, называются <b>тождествами</b>: 2(a + 3) = 2a + 6.</div>']],
+['Свойства степеней',[
+'<h3>🚀 Что такое степень</h3><p>Степень — короткая запись одинаковых множителей.</p><div class=ex>2⁴ = 2·2·2·2 = 16<br>2 — <b>основание</b>, 4 — <b>показатель</b></div><p>a² читается «а в квадрате», a³ — «а в кубе». Первая степень — само число: a¹ = a.</p>',
+'<h3>✖️ Умножение и деление</h3><table><tr><td>aⁿ·aᵐ = aⁿ⁺ᵐ</td><td>x³·x⁵ = x⁸</td></tr><tr><td>{aⁿ|aᵐ} = aⁿ⁻ᵐ</td><td>{x⁷|x²} = x⁵</td></tr></table><div class="ex tip">Основания одинаковые: при умножении показатели <b>складываем</b>, при делении — <b>вычитаем</b>.</div>',
+'<h3>🔝 Степень в степени</h3><table><tr><td>(aⁿ)ᵐ = aⁿᵐ</td><td>(x²)³ = x⁶</td></tr><tr><td>(ab)ⁿ = aⁿbⁿ</td><td>(2x)³ = 8x³</td></tr><tr><td>({a|b})ⁿ = {aⁿ|bⁿ}</td><td>({2|3})² = {4|9}</td></tr></table>',
+'<h3>0️⃣ Нулевая и отрицательная степень</h3><div class=ex>a⁰ = 1 (при a ≠ 0), например 5⁰ = 1<br>a⁻ⁿ = {1|aⁿ}, например 2⁻³ = {1|2³} = {1|8}</div><div class="ex warn">(−2)² = 4, но −2² = −4. Во втором случае в квадрат возводится только двойка.</div><div class=ex>(2x³)²·x = 4x⁶·x = <b>4x⁷</b></div>']],
+['Одночлены и многочлены',[
+'<h3>🧱 Одночлен</h3><p>Одночлен — произведение чисел и букв в степенях. В <b>стандартном виде</b> число (коэффициент) стоит первым, а одинаковые буквы собраны вместе.</p><div class=ex>2a·3a²·b = <b>6a³b</b><br>коэффициент 6, степень 3 + 1 = 4</div><div class="ex warn">x + 1 — не одночлен, это сумма.</div>',
+'<h3>🧩 Многочлен</h3><p>Многочлен — сумма одночленов, например 3x² − 5x + 1. Слагаемые с одинаковой буквенной частью — <b>подобные</b>, их приводят.</p><div class=ex>4x² + 3x − x² + 5x = <b>3x² + 8x</b></div><p>Степень многочлена — наибольшая степень его одночленов. У 3x² + 8x она равна 2.</p>',
+'<h3>➕ Сложение и вычитание</h3><p>Раскрываем скобки. Если перед скобкой минус, все знаки внутри меняются.</p><div class=ex>(3x + 2) − (x − 4) = 3x + 2 − x + 4 = <b>2x + 6</b></div>',
+'<h3>✖️ Умножение</h3><p>Одночлен на многочлен: умножаем на каждое слагаемое. Многочлен на многочлен: каждый член на каждый.</p><div class=ex>2x(x² − 3x) = <b>2x³ − 6x²</b><br>(x + 2)(x + 3) = x² + 3x + 2x + 6 = <b>x² + 5x + 6</b></div>',
+'<h3>⚡ Формулы сокращённого умножения</h3><div class=ex>(a + b)² = a² + 2ab + b²<br>(a − b)² = a² − 2ab + b²<br>a² − b² = (a − b)(a + b)</div><div class=ex>(x + 5)² = x² + 10x + 25<br>99·101 = 100² − 1 = <b>9999</b></div><div class="ex warn">Не забывай среднее слагаемое: (a + b)² ≠ a² + b².</div>',
+'<h3>🔍 Разложение на множители</h3><p>1. <b>Общий множитель:</b> 6x² + 9x = 3x(2x + 3).<br>2. <b>Группировка:</b> ax + ay + bx + by = a(x + y) + b(x + y) = (a + b)(x + y).<br>3. <b>Формулы:</b> 49 − y² = (7 − y)(7 + y).</p><div class="ex tip">Разложение — это умножение наоборот. Проверяй себя, раскрывая скобки.</div>']],
+['Системы уравнений',[
+'<h3>🧷 Что такое система</h3><p>Система — два уравнения с двумя неизвестными. Решение — пара чисел (x; y), которая подходит к обоим уравнениям.</p><div class=ex>x + y = 5<br>x − y = 1</div><p>Проверим пару (3; 2): 3 + 2 = 5 ✓, 3 − 2 = 1 ✓.</p>',
+'<h3>🔄 Способ подстановки</h3><p>Выражаем одну букву и подставляем в другое уравнение.</p><div class=ex>x + y = 5, x − y = 1<br>y = 5 − x<br>x − (5 − x) = 1 → 2x = 6 → x = 3, y = 2</div><div class=ex>Ответ: <b>(3; 2)</b></div>',
+'<h3>➕ Способ сложения</h3><p>Складываем уравнения так, чтобы одна буква исчезла. Если не исчезает — умножаем уравнение на число.</p><div class=ex>3x + 2y = 12<br>2x − y = 1 | ·2 → 4x − 2y = 2<br>Сложим: 7x = 14 → x = 2, y = 3</div>',
+'<h3>📈 График и задача</h3><p><b>Графически:</b> каждое уравнение — прямая, решение системы — точка пересечения. Параллельные прямые — решений нет, совпадающие — бесконечно много.</p><div class=ex><b>Задача.</b> В кошельке 10 монет по 2 и 5 рублей, всего 38 рублей.<br>x + y = 10, 2x + 5y = 38<br>x = 10 − y → 20 − 2y + 5y = 38 → y = 6, x = 4</div>']],
+['Алгебраическая дробь',[
+'<h3>🍰 Что это</h3><p>Алгебраическая дробь — дробь, у которой в числителе и знаменателе выражения с буквами.</p><div class=ex>{x + 1|x − 2}</div><p>Знаменатель не может быть нулём, поэтому здесь x ≠ 2.</p>',
+'<h3>✂️ Сокращение</h3><p>Основное свойство: числитель и знаменатель можно делить на одно и то же. Сначала раскладываем на множители, потом сокращаем.</p><div class=ex>{x² − 9|x + 3} = {(x − 3)(x + 3)|x + 3} = <b>x − 3</b><br>{6a²b|9ab²} = <b>{2a|3b}</b></div><div class="ex warn">Сокращать можно только множители, а не слагаемые: в {x + 3|3} тройку сократить нельзя.</div>',
+'<h3>➕ Сложение и вычитание</h3><div class=ex>{a|x} + {b|x} = {a + b|x}</div><p>Разные знаменатели — приводим к общему.</p><div class=ex>{1|x} + {2|x + 1} = {1·(x + 1) + 2x|x(x + 1)} = <b>{3x + 1|x(x + 1)}</b></div>',
+'<h3>✖️ Умножение, деление, степень</h3><div class=ex>{a|b}·{c|d} = {ac|bd}<br>{a|b} : {c|d} = {a|b}·{d|c}<br>({a|b})ⁿ = {aⁿ|bⁿ}</div><div class=ex>{x² − 4|x} : {x + 2|x²} = {(x − 2)(x + 2)|x}·{x²|x + 2} = <b>x(x − 2)</b></div>',
+'<h3>🧠 Рациональные выражения</h3><p>План упрощения: 1) разложи на множители, 2) приведи к общему знаменателю, 3) сократи.</p><div class=ex>{x|x − 2} − {4|x² − 2x} = {x|x − 2} − {4|x(x − 2)}<br>= {x² − 4|x(x − 2)} = {(x − 2)(x + 2)|x(x − 2)} = <b>{x + 2|x}</b></div>']],
+['Корень',[
+'<h3>🌱 Что такое квадратный корень</h3><p>Корень из a — неотрицательное число, квадрат которого равен a.</p><div class=ex>√[49] = 7, так как 7² = 49<br>√[0] = 0<br>√[−4] не существует</div><div class="ex tip">Уравнение x² = 9 имеет два корня: x = 3 и x = −3. А вот √[9] = 3 — только одно число.</div>',
+'<h3>🔢 Рациональные и иррациональные числа</h3><p>Числа, которые нельзя записать конечной или периодической дробью, называются <b>иррациональными</b>.</p><div class=ex>√[2] ≈ 1,414…<br>√[3] ≈ 1,732…<br>π ≈ 3,1415…</div><div class=ex>√[a²] = |a|, например √[(−3)²] = 3</div>',
+'<h3>⚙️ Свойства корней</h3><div class=ex>√[ab] = √[a]·√[b]<br>√[{a|b}] = {√[a]|√[b]}</div><div class=ex>√[3]·√[12] = √[36] = 6<br>{√[18]|√[2]} = √[9] = 3</div>',
+'<h3>📦 Вынесение и внесение множителя</h3><div class=ex>√[72] = √[36·2] = <b>6√[2]</b><br>3√[2] = √[9·2] = <b>√[18]</b></div><p>Сравнить √[5] и 2: внесём двойку, 2 = √[4]. Так как 5 больше 4, то √[5] больше 2.</p>',
+'<h3>🎯 Избавление от корня в знаменателе</h3><p>Домножаем числитель и знаменатель на корень.</p><div class=ex>{1|√[2]} = {1·√[2]|√[2]·√[2]} = <b>{√[2]|2}</b><br>{6|√[3]} = {6√[3]|3} = <b>2√[3]</b></div>']],
+['Квадратные, кубические и биквадратные уравнения',[
+'<h3>🧮 Квадратное уравнение</h3><p>Уравнение вида <b>ax² + bx + c = 0</b>, где a ≠ 0. Если b или c равны нулю, оно <b>неполное</b> и решается проще.</p><div class=ex>x² − 9 = 0 → x² = 9 → x = ±3<br>2x² + 8x = 0 → 2x(x + 4) = 0 → x = 0 или x = −4<br>x² + 4 = 0 → корней нет (квадрат не бывает отрицательным)</div>',
+'<h3>🔑 Дискриминант</h3><p><b>D = b² − 4ac</b>. Он показывает, сколько корней у уравнения.</p><div class=ex>D &gt; 0 — два корня: x = {−b ± √[D]|2a}<br>D = 0 — один корень: x = {−b|2a}<br>D &lt; 0 — корней нет</div><div class=ex>x² − 5x + 6 = 0<br>D = 25 − 24 = 1<br>x = {5 ± 1|2} → <b>x = 3 и x = 2</b></div>',
+'<h3>✨ Чётный второй коэффициент</h3><p>Если b = 2k, удобнее считать <b>D₁ = k² − ac</b>.</p><div class=ex>x = {−k ± √[D₁]|a}</div><div class=ex>x² − 6x + 5 = 0 → k = −3, D₁ = 9 − 5 = 4<br>x = {3 ± 2|1} → <b>x = 5 и x = 1</b></div>',
+'<h3>🧩 Теорема Виета</h3><p>Для приведённого уравнения x² + px + q = 0:</p><div class=ex>x₁ + x₂ = −p<br>x₁·x₂ = q</div><div class=ex>x² − 7x + 12 = 0: сумма 7, произведение 12 → <b>3 и 4</b></div><div class="ex tip">Для ax² + bx + c = 0: x₁ + x₂ = {−b|a}, x₁·x₂ = {c|a}. Теорема работает и наоборот — так удобно подбирать корни.</div>',
+'<h3>🔄 Биквадратное уравнение</h3><p>Вид <b>ax⁴ + bx² + c = 0</b>. Замена <b>t = x²</b> превращает его в квадратное.</p><div class=ex>x⁴ − 5x² + 4 = 0<br>t² − 5t + 4 = 0 → t = 1 или t = 4<br>x² = 1 → x = ±1; x² = 4 → x = ±2<br>Ответ: <b>±1, ±2</b></div><div class="ex warn">t = x² не бывает отрицательным: корни t &lt; 0 отбрасываем. В x⁴ + x² − 6 = 0 получаем t = 2 или t = −3. Подходит только t = 2, значит x = ±√[2].</div>',
+'<h3>🧊 Кубические уравнения</h3><p>Общие формулы слишком громоздки, поэтому в школе кубические уравнения <b>раскладывают на множители</b>.</p><div class=ex>Вынесение: x³ − 4x = x(x − 2)(x + 2) = 0 → 0, 2, −2<br>Группировка: x³ + x² − 9x − 9 = x²(x + 1) − 9(x + 1) = (x + 1)(x − 3)(x + 3)<br>Подбор: x³ − 6x² + 11x − 6 = 0, корень x = 1 → (x − 1)(x² − 5x + 6) → 1, 2, 3</div><div class="ex tip">Целые корни ищи среди делителей свободного члена.</div>',
+'<h3>➗ Дробные уравнения</h3><p>Если неизвестное стоит в знаменателе, сначала находим допустимые значения, затем умножаем на общий знаменатель.</p><div class=ex>{x²|x − 2} = {4|x − 2}, x ≠ 2<br>x² = 4 → x = ±2<br>x = 2 не подходит → <b>x = −2</b></div>',
+'<h3>📦 Текстовые задачи</h3><div class=ex>Площадь прямоугольника 48 см², одна сторона на 2 см длиннее другой.<br>x(x + 2) = 48 → x² + 2x − 48 = 0<br>D = 4 + 192 = 196, x = {−2 ± 14|2} → 6 или −8<br>Стороны: <b>6 см и 8 см</b></div><div class="ex tip">Отрицательная длина не подходит. Всегда проверяй смысл ответа.</div>']],
+['Неравенства',[
+'<h3>⚖️ Числовые неравенства</h3><p>Знаки: &gt; (больше), &lt; (меньше), ≥ и ≤ (не строгие).</p><div class=ex>Прибавили к обеим частям число — знак не меняется.<br>Умножили на положительное — не меняется.<br>Умножили на <b>отрицательное</b> — знак меняется на противоположный.</div><div class=ex>3 &lt; 5 → −3 &gt; −5 (умножили на −1)</div>',
+'<h3>🧗 Линейные неравенства</h3><p>Решаем как уравнение, но при делении на отрицательное число меняем знак.</p><div class=ex>3 − 2x &gt; 7<br>−2x &gt; 4 | : (−2), знак меняем<br>x &lt; −2</div><div class=ex>2x + 1 ≤ 9 → 2x ≤ 8 → <b>x ≤ 4</b></div>',
+'<h3>📏 Числовые промежутки</h3><table><tr><td>x &gt; 2</td><td>(2; +∞)</td></tr><tr><td>x ≤ 5</td><td>(−∞; 5]</td></tr><tr><td>2 &lt; x ≤ 5</td><td>(2; 5]</td></tr></table><div class="ex tip">Круглая скобка — число не входит, квадратная — входит. Бесконечность всегда в круглой скобке.</div>',
+'<h3>🔗 Системы и двойные неравенства</h3><p>Система: решаем каждое неравенство, ответ — пересечение промежутков.</p><div class=ex>x &gt; 1 и x &lt; 4 → <b>(1; 4)</b></div><div class=ex>−1 &lt; 2x + 3 &lt; 7<br>−4 &lt; 2x &lt; 4 → <b>−2 &lt; x &lt; 2</b></div>']],
+['Функции и графики',[
+'<h3>🎰 Что такое функция</h3><p>Функция — правило, по которому каждому x соответствует ровно один y. Как автомат: бросил x — получил y.</p><div class=ex>y = 2x + 1: при x = 3 получаем y = 7</div><p>x — <b>аргумент</b>, y — <b>значение функции</b>. График — все точки (x; y) на плоскости.</p>',
+'<h3>🔣 Язык функций</h3><div class=ex>y = f(x) читается «игрек равно эф от икс»<br>f(x) = 2x + 1 → f(3) = 7<br><b>D(f)</b> — область определения: все допустимые x<br><b>E(f)</b> — множество значений: все получаемые y<br><b>Нуль функции</b> — такое x, что f(x) = 0</div><div class=ex>y = √[x]: D(f) = [0; +∞), E(f) = [0; +∞)<br>y = {1|x}: D(f) = (−∞; 0) ∪ (0; +∞)</div>',
+'<h3>📈 Линейная функция y = kx + b</h3><p>График — прямая. <b>k</b> задаёт наклон: k &gt; 0 — прямая растёт, k &lt; 0 — убывает. <b>b</b> — точка пересечения с осью y.</p><div class=ex>y = 2x + 1: точки (0; 1) и (1; 3)<br>Двух точек хватает, чтобы провести прямую.</div>',
+'<h3>↗️ Прямая пропорциональность</h3><p>При b = 0 получаем y = kx — прямую через начало координат (0; 0).</p><div class=ex>Прямые параллельны, если у них одинаковое k.<br>y = 2x + 1 и y = 2x − 3 — параллельны.</div><p>Пересечение с осью x: подставь y = 0 и реши уравнение.</p>',
+'<h3>🥣 Парабола y = x²</h3><div class=ex>Вершина в (0; 0), ветви вверх<br>x = 2 → y = 4, x = −2 → y = 4<br>График симметричен относительно оси y</div><p>Значения y никогда не отрицательны.</p>',
+'<h3>🌗 Гипербола и корень</h3><div class=ex><b>y = {k|x}</b> — гипербола, две ветви, x ≠ 0<br><b>y = √[x]</b> — половина параболы, x ≥ 0</div><p>Проверь сам на следующей странице.</p>',GR]]
+],
+chem:[
+['Химия как предмет',[
+'<h3>🧪 О чём эта наука</h3><p>Химия изучает <b>вещества</b>, их свойства и превращения друг в друга. Всё вокруг — вода, воздух, твоя ручка — состоит из веществ.</p>'+IMG.glass+'<div class="ex tip">Тело — предмет (гвоздь), вещество — то, из чего он сделан (железо).</div>',
+'<h3>⚛️ Из чего состоят вещества</h3><p>Вещества состоят из мельчайших частиц — <b>атомов</b>. Атомы соединяются в <b>молекулы</b>. В центре атома — ядро, вокруг него движутся электроны.</p>'+IMG.atom+'<div class=ex>Молекула воды H₂O: 2 атома водорода и 1 атом кислорода.</div>',
+'<h3>🔎 Свойства веществ</h3><div class=ex><b>Физические:</b> цвет, запах, агрегатное состояние, плотность, температура кипения и плавления.<br><b>Химические:</b> способность превращаться в другие вещества — гореть, ржаветь, разлагаться.</div>',
+'<h3>🔥 Физические и химические явления</h3><div class=ex><b>Физические</b> — состав не меняется: плавление льда, испарение воды.<br><b>Химические (реакции)</b> — образуются новые вещества: горение, ржавление, скисание молока.</div><p>Признаки реакции: изменение цвета, запах, осадок, газ, свет, тепло.</p>',
+'<h3>🥽 Безопасность в лаборатории</h3><div class="ex warn">Работай в очках и халате. Не пробуй вещества на вкус и не нюхай их близко. Пробирку нагревай, направляя отверстием от себя и от соседей.</div><p>Правило нюхания: ладонью направляй воздух от сосуда к себе.</p>']],
+['Типы веществ',[
+'<h3>🥤 Чистые вещества и смеси</h3><p><b>Чистое вещество</b> — одно вещество (вода, железо). <b>Смесь</b> — несколько веществ, не потерявших своих свойств.</p>'+IMG.mix+'<div class=ex><b>Однородные</b> — частиц не видно даже в микроскоп: воздух, раствор соли, сплавы.<br><b>Неоднородные</b> — границы видны.</div>',
+'<h3>🌫️ Виды смесей</h3><div class=ex>Суспензия: твёрдое в жидкости (вода с мелом)<br>Эмульсия: жидкость в жидкости (молоко, вода с маслом)<br>Аэрозоль: жидкость или твёрдое в газе (туман, дым)<br>Раствор: однородная смесь (морская вода)</div>',
+'<h3>🧻 Отстаивание и фильтрование</h3><p>Для смесей с нерастворимыми частицами: тяжёлые частицы оседают сами (<b>отстаивание</b>) или остаются на фильтре (<b>фильтрование</b>).</p>'+IMG.filt,
+'<h3>🧲 Магнит и выпаривание</h3><p><b>Магнит</b> вытягивает железные опилки из смеси с песком.</p>'+IMG.mag+'<p><b>Выпаривание:</b> вода превращается в пар, а растворённая соль остаётся.</p>'+IMG.evap,
+'<h3>⚗️ Дистилляция</h3><p>Нагреваем смесь жидкостей, пар охлаждаем в холодильнике — получаем чистую жидкость.</p>'+IMG.dist+'<div class=ex>Так получают дистиллированную воду.</div><p><b>Простые</b> вещества состоят из атомов одного элемента (O₂, Fe), <b>сложные</b> — из разных (H₂O, NaCl).</p>']],
+['Химические элементы и уравнения',[
+'<h3>🔣 Знаки и формулы</h3><p>Химический элемент — вид атомов. У каждого свой знак: H, O, Fe. Знак — одна или две буквы, первая заглавная.</p>'+IMG.h2o+'<div class=ex>Формула <b>H₂O</b>: 2 атома H и 1 атом O. Маленькая цифра внизу — <b>индекс</b>.</div>',
+'<h3>🗣️ Как читаются формулы</h3><table><tr><td>H₂O</td><td>«аш-два-о»</td></tr><tr><td>CO₂</td><td>«цэ-о-два»</td></tr><tr><td>NaCl</td><td>«натрий-хлор»</td></tr><tr><td>H₂SO₄</td><td>«аш-два-эс-о-четыре»</td></tr><tr><td>Zn(OH)₂</td><td>«цинк-о-аш-дважды»</td></tr></table>',
+'<h3>🧩 Скобки в формулах</h3><p>Индекс за скобкой относится ко всему, что в скобках.</p><div class=ex><b>Zn(OH)₂</b> — гидроксид цинка<br>Zn — 1 атом, O — 2 атома, H — 2 атома</div><div class=ex>Ca(OH)₂: Ca — 1, O — 2, H — 2<br>Al₂(SO₄)₃: Al — 2, S — 3, O — 4·3 = 12</div>',
+'<h3>⚖️ Уравнения реакций</h3><div class=ex><b>2H₂ + O₂ = 2H₂O</b></div><p>Читается: «два аш-два плюс о-два равно два аш-два-о». Большая цифра перед формулой — <b>коэффициент</b>.</p><p>Закон сохранения массы: атомов каждого элемента слева и справа поровну. Слева H — 4, O — 2; справа H — 2·2 = 4, O — 2. Верно!</p>',
+'<h3>🛠️ Расставляем коэффициенты</h3><p>Считай атомы и выравнивай по очереди.</p><div class=ex>Fe + O₂ → Fe₂O₃<br>Кислорода справа 3, слева 2 → ищем общее 6: 3O₂ и 2Fe₂O₃<br>Железа теперь 4: <b>4Fe + 3O₂ = 2Fe₂O₃</b></div><div class=ex>CH₄ + 2O₂ = CO₂ + 2H₂O<br>ZnCl₂ + 2NaOH = Zn(OH)₂↓ + 2NaCl</div><div class="ex tip">Стрелка вниз ↓ означает осадок, стрелка вверх ↑ — газ.</div>',
+'<h3>🔀 Типы реакций</h3><div class=ex><b>Соединение:</b> A + B = AB (2Mg + O₂ = 2MgO)<br><b>Разложение:</b> AB = A + B (2H₂O = 2H₂ + O₂)<br><b>Замещение:</b> Zn + 2HCl = ZnCl₂ + H₂↑<br><b>Обмен:</b> вещества обмениваются частями (ZnCl₂ + 2NaOH = Zn(OH)₂↓ + 2NaCl)</div>',ELH]],
+['Валентность',[
+'<h3>🔗 Что такое валентность</h3><p>Валентность — число связей, которые атом образует с другими атомами. Её пишут римской цифрой <b>над знаком</b> элемента.</p>'+IMG.ch4+'<div class=ex>⟦I|H⟧–⟦I|Cl⟧: по одной связи у каждого атома<br>⟦I|H⟧–⟦II|O⟧–⟦I|H⟧: у кислорода две связи<br>⟦IV|C⟧⟦I|H⟧₄ (метан): у углерода четыре связи</div>',
+'<h3>📋 Постоянная и переменная</h3><table><tr><td>I</td><td>⟦I|H⟧ ⟦I|Li⟧ ⟦I|Na⟧ ⟦I|K⟧ ⟦I|Ag⟧</td></tr><tr><td>II</td><td>⟦II|O⟧ ⟦II|Mg⟧ ⟦II|Ca⟧ ⟦II|Ba⟧ ⟦II|Zn⟧</td></tr><tr><td>III</td><td>⟦III|Al⟧</td></tr></table><div class=ex><b>Переменная валентность:</b><br>Fe: ⟦II|Fe⟧ и ⟦III|Fe⟧; Cu: ⟦I|Cu⟧ и ⟦II|Cu⟧<br>S: ⟦II|S⟧, ⟦IV|S⟧, ⟦VI|S⟧; C: ⟦II|C⟧, ⟦IV|C⟧; P: ⟦III|P⟧, ⟦V|P⟧</div>',
+'<h3>✍️ Составляем формулу</h3><p>Правило: <b>валентность × индекс</b> у обоих элементов одинаково. Находим общее кратное и делим на валентность.</p><div class=ex>⟦III|Al⟧ и ⟦II|O⟧: общее кратное 6<br>индекс Al = 6 : 3 = 2, индекс O = 6 : 2 = 3<br><b>⟦III|Al⟧₂⟦II|O⟧₃</b></div><div class=ex>⟦II|Ca⟧ и ⟦I|Cl⟧ → <b>⟦II|Ca⟧⟦I|Cl⟧₂</b><br>⟦V|P⟧ и ⟦II|O⟧: общее 10 → <b>⟦V|P⟧₂⟦II|O⟧₅</b></div>',
+'<h3>🔬 Определяем валентность по формуле</h3><div class=ex>Fe₂O₃: у O (II) всего 2·3 = 6 → у Fe 6 : 2 = III<br><b>⟦III|Fe⟧₂⟦II|O⟧₃</b></div><div class=ex>SO₃: 2·3 = 6 → <b>⟦VI|S⟧⟦II|O⟧₃</b><br>NH₃: 1·3 = 3 → <b>⟦III|N⟧⟦I|H⟧₃</b></div>',
+'<h3>🔥 Оксиды</h3><p><b>Оксид</b> — сложное вещество из двух элементов, один из которых кислород (II).</p>'+IMG.co2+'<div class=ex>CO₂ — <b>⟦IV|C⟧⟦II|O⟧₂</b>: у углерода четыре связи, у каждого O две</div><p>Название: «оксид + элемент». Если у элемента переменная валентность, её пишут римской цифрой в скобках.</p>',
+'<h3>📛 Названия оксидов</h3><table><tr><td>⟦I|H⟧₂⟦II|O⟧</td><td>оксид водорода</td></tr><tr><td>⟦II|Ca⟧⟦II|O⟧</td><td>оксид кальция</td></tr><tr><td>⟦I|Na⟧₂⟦II|O⟧</td><td>оксид натрия</td></tr><tr><td>⟦IV|S⟧⟦II|O⟧₂</td><td>оксид серы(IV)</td></tr><tr><td>⟦VI|S⟧⟦II|O⟧₃</td><td>оксид серы(VI)</td></tr><tr><td>⟦II|Fe⟧⟦II|O⟧</td><td>оксид железа(II)</td></tr><tr><td>⟦III|Fe⟧₂⟦II|O⟧₃</td><td>оксид железа(III)</td></tr></table>',
+'<h3>🎯 Практика</h3><div class=ex><b>Формула:</b> оксид азота(V): ⟦V|N⟧ и ⟦II|O⟧ → общее 10 → <b>⟦V|N⟧₂⟦II|O⟧₅</b><br>Оксид меди(II) → <b>⟦II|Cu⟧⟦II|O⟧</b><br>Оксид хрома(III) → <b>⟦III|Cr⟧₂⟦II|O⟧₃</b></div><div class=ex><b>Валентность:</b> Mn₂O₇: 2·7 = 14 → Mn 14 : 2 = VII → <b>⟦VII|Mn⟧₂⟦II|O⟧₇</b></div>']],
+['Ar, Mr и массовые доли',[
+'<h3>⚖️ Относительная атомная масса Ar</h3><p>Настоящие массы атомов ничтожны: атом водорода весит около 1,67·10⁻²⁴ г. Поэтому их сравнивают с эталоном — 1/12 атома углерода.</p><div class=ex><b>Ar</b> показывает, во сколько раз атом тяжелее 1/12 атома углерода. Это число без единиц измерения.</div><div class=ag><div class=el><b>H</b><span>Ar = 1</span></div><div class=el><b>C</b><span>Ar = 12</span></div><div class=el><b>N</b><span>Ar = 14</span></div><div class=el><b>O</b><span>Ar = 16</span></div><div class=el><b>Na</b><span>Ar = 23</span></div><div class=el><b>Mg</b><span>Ar = 24</span></div><div class=el><b>Al</b><span>Ar = 27</span></div><div class=el><b>S</b><span>Ar = 32</span></div><div class=el><b>Cl</b><span>Ar = 35,5</span></div><div class=el><b>K</b><span>Ar = 39</span></div><div class=el><b>Ca</b><span>Ar = 40</span></div><div class=el><b>Fe</b><span>Ar = 56</span></div><div class=el><b>Cu</b><span>Ar = 64</span></div><div class=el><b>Zn</b><span>Ar = 65</span></div></div><div class="ex tip">Значения округляют до целых. Исключение — хлор: 35,5.</div>',
+'<h3>🧮 Относительная молекулярная масса Mr</h3><p><b>Mr</b> — сумма Ar всех атомов в формуле с учётом индексов.</p><div class=ex>Mr(H₂O) = 2·1 + 16 = <b>18</b><br>Mr(CO₂) = 12 + 2·16 = <b>44</b><br>Mr(H₂SO₄) = 2·1 + 32 + 4·16 = <b>98</b><br>Mr(NaCl) = 23 + 35,5 = <b>58,5</b></div><div class="ex warn">Со скобками умножай всё внутри: Mr(Ca(OH)₂) = 40 + 2·(16 + 1) = 74.</div>',
+'<h3>🥧 Массовая доля элемента</h3><p>Показывает, какую часть массы вещества составляет элемент.</p><div class=ex><b>ω(Э) = {n·Ar(Э)|Mr(вещества)}</b>, где n — число атомов элемента (в процентах умножаем на 100 %)</div>'+IMG.share+'<div class=ex>ω(H) = {2·1|18} ≈ 0,111 = 11,1 %<br>ω(O) = {16|18} ≈ 0,889 = 88,9 %<br>Проверка: 11,1 % + 88,9 % = 100 %</div>',
+'<h3>🔍 Задачи на массовую долю</h3><div class=ex><b>Масса элемента в порции:</b> m(Э) = ω·m(вещества)<br>В 36 г воды: m(O) = 36·{16|18} = 32 г</div><div class=ex><b>Отношение масс:</b> в H₂O m(H) : m(O) = 2 : 16 = 1 : 8</div><div class=ex><b>Формула по долям:</b> ω(C) = 27,3 %, ω(O) = 72,7 %<br>n(C) : n(O) = {27,3|12} : {72,7|16} ≈ 2,28 : 4,54 = 1 : 2 → <b>CO₂</b></div>',
+'<h3>🧂 Массовая доля вещества в растворе</h3><div class=ex><b>ω = {m(вещества)|m(раствора)}·100 %</b><br>m(раствора) = m(вещества) + m(воды)</div><div class=ex>20 г соли + 80 г воды: ω = {20|100} = <b>20 %</b></div><div class=ex>Сколько соли в 250 г 4 % раствора?<br>m(соли) = 250·0,04 = <b>10 г</b>, воды 250 − 10 = 240 г</div>']],
+['Химические реакции',[
+'<h3>🔥 Что такое химическая реакция</h3><p>Химическая реакция — превращение одних веществ в другие. Исходные вещества называют <b>реагентами</b>, получившиеся — <b>продуктами</b>.</p><div class=ex>железо + сера → сульфид железа<br><b>Fe + S = FeS</b></div><p>Атомы при этом не исчезают: они лишь переходят из одних молекул в другие.</p>',
+'<h3>🔎 Признаки и условия</h3><div class=ex><b>Признаки:</b> изменение цвета, запах, выпадение осадка, выделение газа, свет, тепло</div><div class=ex><b>Условия:</b> соприкосновение веществ, нагревание, свет, катализатор, давление</div><div class="ex tip">Свеча горит, когда есть горючее вещество, кислород и нагрев до температуры воспламенения. Убери одно из условий — огонь погаснет.</div>',
+'<h3>⚖️ Закон сохранения массы</h3><p>Масса веществ до реакции равна массе веществ после неё. Закон открыли Ломоносов (1748) и Лавуазье (1789).</p><div class=ex>2H₂ + O₂ = 2H₂O<br>4 г + 32 г = 36 г</div><p>Поэтому в уравнении атомов каждого элемента слева и справа поровну.</p>',
+'<h3>🌡️ Тепловой эффект</h3><div class=ex>🔥 <b>Экзотермические</b> — тепло выделяется: горение, нейтрализация<br>CH₄ + 2O₂ = CO₂ + 2H₂O + Q<br>❄️ <b>Эндотермические</b> — тепло поглощается: разложение известняка<br>CaCO₃ = CaO + CO₂↑ − Q</div>',
+'<h3>🔀 Типы реакций</h3>'+IMG.react+'<div class=ex><b>Соединение:</b> 2Mg + O₂ = 2MgO<br><b>Разложение:</b> CaCO₃ = CaO + CO₂↑<br><b>Замещение:</b> Fe + CuSO₄ = FeSO₄ + Cu<br><b>Обмен:</b> NaOH + HCl = NaCl + H₂O</div>',
+'<h3>🧪 Катализаторы и скорость</h3><p>Скорость реакции растёт при нагревании, при увеличении концентрации и при измельчении твёрдых веществ.</p><div class=ex><b>Катализатор</b> ускоряет реакцию, но сам не расходуется.<br>2H₂O₂ = 2H₂O + O₂↑ (катализатор MnO₂)</div><p>Вещества, замедляющие реакции, называют <b>ингибиторами</b>.</p>',
+'<h3>🧰 Как составить уравнение</h3><div class=ex>1. Запиши формулы реагентов и продуктов.<br>2. Поставь знак реакции.<br>3. Подбери коэффициенты.<br>4. Пересчитай атомы.</div><div class=ex>алюминий + хлор → хлорид алюминия<br>Al + Cl₂ → AlCl₃<br>Cl: 2 и 3 → общее 6 → 3Cl₂ и 2AlCl₃, затем 2Al<br><b>2Al + 3Cl₂ = 2AlCl₃</b></div>']]
+]};
+// ---------- Тесты и задания ----------
+// Формат: [ [10 вопросов: 'вопрос','А¦Б¦В¦Г',номер верного], [задания: 'условие','решение','ответ'], [тестовые задания] ]
+var QZ={alg:[],chem:[]};
+QZ.alg.push([[
+['Значение выражения 3a + 2 при a = 4','12¦14¦24¦10',1],
+['Какое выражение буквенное?','8 + 5¦3·(4 − 1)¦2x − 7¦15 : 3',2],
+['Чему равно 2 + 3·4²?','50¦100¦80¦26',0],
+['Формула s = v·t. Найди s при v = 60, t = 3','20¦180¦63¦120',1],
+['Приведи подобные: 5a + 3a − 2a','10a¦6a²¦8a¦6a',3],
+['При каком x выражение {5|x − 3} не имеет смысла?','5¦0¦3¦−3',2],
+['Упрости 3(a + 2) − 2(a − 1)','a + 8¦a + 4¦5a + 4¦a + 7',0],
+['Найди значение 2x² − 3x при x = −2','2¦14¦−2¦8',1],
+['Какое равенство — тождество?','a + a = a²¦2(a + 3) = 2a + 6¦a·a = 2a¦a − 3 = 3 − a',1],
+['Найди значение (a − b)² − (a + b)² при a = 3, b = 2','24¦−12¦1¦−24',3]
+],[
+['Найдите значение выражения 5x − 12 при x = 3.','5·3 − 12 = 15 − 12 = 3.','3'],
+['Найдите значение выражения {a + b|a − b} при a = 7, b = 3.','{7 + 3|7 − 3} = {10|4} = 2,5.','2,5'],
+['Упростите выражение 4(2x − 1) − 3(x + 2).','8x − 4 − 3x − 6 = 5x − 10.','5x − 10'],
+['Площадь прямоугольника S = a·b. Выразите b через S и a и найдите b при S = 48, a = 6.','Делим обе части на a: b = {S|a}. При S = 48, a = 6: b = {48|6} = 8.','b = {S|a}; b = 8'],
+['Докажите, что выражение (x + 3)² − (x − 3)² − 12x тождественно равно нулю.','(x² + 6x + 9) − (x² − 6x + 9) − 12x = x² + 6x + 9 − x² + 6x − 9 − 12x = 12x − 12x = 0.','0 при любом x'],
+['При каких значениях x имеет смысл выражение {1|x} + {2|x − 4}?','Знаменатели не равны нулю: x ≠ 0 и x − 4 ≠ 0, то есть x ≠ 4.','x ≠ 0 и x ≠ 4']
+],[
+['Значение выражения 7 − 2a при a = −3','1¦13¦−13¦4',1],
+['Упростите 2x + 5 − x − 5','x¦3x¦10¦x + 10',0],
+['Какое выражение не имеет смысла при x = 2?','{x|x − 2}¦{x − 2|x}¦{2|x + 2}¦{x|3}',0]
+]]);
+QZ.alg.push([[
+['Чему равно 2⁴?','8¦16¦6¦24',1],
+['x³·x⁵ =','x⁸¦x¹⁵¦x²¦x⁷',0],
+['{x⁷|x²} =','x⁹¦x¹⁴¦x⁵¦x⁴',2],
+['(x²)³ =','x⁵¦x⁶¦x⁸¦x⁹',1],
+['Чему равно 5⁰?','0¦5¦не определено¦1',3],
+['2⁻³ =','−8¦{1|8}¦−6¦{1|6}',1],
+['(2x³)² =','2x⁶¦4x⁵¦2x⁵¦4x⁶',3],
+['{(a²)³·a⁴|a⁷} =','a³¦a⁹¦a⁷¦a¹¹',0],
+['(−2)² − 2² =','8¦−8¦0¦4',2],
+['Найди значение {3⁵·9²|27³}','3¦1¦9¦27',1]
+],[
+['Вычислите: 2³ + 3² − 5⁰.','8 + 9 − 1 = 16.','16'],
+['Упростите: x⁴·x⁷ : x⁵.','x⁴·x⁷ = x¹¹, затем x¹¹ : x⁵ = x⁶.','x⁶'],
+['Представьте в виде степени: (a³)⁴·a².','(a³)⁴ = a¹², a¹²·a² = a¹⁴.','a¹⁴'],
+['Найдите значение выражения {2⁷·4³|8⁴}.','4³ = 2⁶, 8⁴ = 2¹². Тогда {2⁷·2⁶|2¹²} = {2¹³|2¹²} = 2.','2'],
+['Упростите: (2x²y)³·{y|4x⁵}.','(2x²y)³ = 8x⁶y³. Умножаем: {8x⁶y³·y|4x⁵} = {8x⁶y⁴|4x⁵} = 2xy⁴.','2xy⁴'],
+['Найдите значение выражения (0,5)⁻² + 2⁻¹.','(0,5)⁻² = {1|0,25} = 4, а 2⁻¹ = 0,5. Сумма 4 + 0,5 = 4,5.','4,5']
+],[
+['a⁵·a³ =','a⁸¦a¹⁵¦a²¦2a⁸',0],
+['(3x)² =','3x²¦6x¦9x²¦9x',2],
+['Значение 10⁻²','−100¦{1|100}¦{1|20}¦0,1',1]
+]]);
+QZ.alg.push([[
+['Стандартный вид одночлена 2a·3a²·b','6a³b¦5a³b¦6a²b¦6ab',0],
+['Коэффициент одночлена −7x²y','7¦−7¦2¦−1',1],
+['Какое выражение — одночлен?','x + 1¦{x|y}¦3x²y¦x − y',2],
+['Приведи подобные: 4x² + 3x − x² + 5x','5x² + 8x¦3x² + 8x¦3x² + 2x¦11x³',1],
+['(x + 2)(x + 3) =','x² + 6¦x² + 5x + 5¦2x + 5¦x² + 5x + 6',3],
+['(a − b)² =','a² − b²¦a² − 2ab − b²¦a² − 2ab + b²¦a² + b²',2],
+['Разложи на множители 6x² + 9x','3x(2x + 3)¦3(2x² + 3x)¦x(6x + 9)¦6x(x + 9)',0],
+['Разложи на множители 49 − y²','(7 − y)²¦(7 − y)(7 + y)¦(49 − y)(1 + y)¦(7 + y)²',1],
+['99·101 удобно считать как','100² + 1¦100² − 2¦100² − 1¦100·100 + 100',2],
+['Разложи на множители ax + ay + 3x + 3y','(a + x)(y + 3)¦(a + 3)(x + y)¦a(x + y) + 3¦(a − 3)(x − y)',1]
+],[
+['Упростите: 3a²·(−2a³b).','Коэффициенты: 3·(−2) = −6. Степени a: a²·a³ = a⁵.','−6a⁵b'],
+['Приведите подобные слагаемые: 7x − 2y + 3x + 5y.','7x + 3x = 10x; −2y + 5y = 3y.','10x + 3y'],
+['Выполните умножение: (2x − 1)(x + 4).','2x·x + 2x·4 − 1·x − 1·4 = 2x² + 8x − x − 4 = 2x² + 7x − 4.','2x² + 7x − 4'],
+['Разложите на множители: 12x²y − 18xy².','Общий множитель 6xy: 12x²y = 6xy·2x, 18xy² = 6xy·3y.','6xy(2x − 3y)'],
+['Разложите на множители: x² − 6x + 9 − y².','Первые три слагаемых — квадрат: (x − 3)² − y². Разность квадратов: (x − 3 − y)(x − 3 + y).','(x − y − 3)(x + y − 3)'],
+['Докажите, что значение выражения 53² − 47² делится на 60.','Разность квадратов: (53 − 47)(53 + 47) = 6·100 = 600. 600 : 60 = 10.','600 = 60·10, делится']
+],[
+['(x − 4)(x + 4) =','x² − 8¦x² + 16¦x² − 16¦x² − 8x + 16',2],
+['Степень многочлена 3x² + 8x','1¦2¦3¦8',1],
+['(a + 5)² =','a² + 25¦a² + 10a + 25¦a² + 5a + 25¦a² + 10a',1]
+]]);
+QZ.alg.push([[
+['Какая пара — решение системы x + y = 5, x − y = 1?','(2; 3)¦(3; 2)¦(4; 1)¦(1; 4)',1],
+['Решение системы двух уравнений с двумя неизвестными — это','одно число¦пара чисел¦три числа¦ничего',1],
+['x + y = 7 и x = 3. Найди y','4¦10¦3¦−4',0],
+['Сложив уравнения x + y = 9 и x − y = 1, получим','2x = 10¦2y = 8¦x = 10¦2x = 8',0],
+['Графически решение системы — это','ось x¦параллельные прямые¦точка пересечения прямых¦начало координат',2],
+['2x + y = 7, x − y = 2. Найди x','1¦2¦3¦4',2],
+['Сколько решений у системы 2x + y = 5, 4x + 2y = 11?','одно¦два¦бесконечно много¦ни одного',3],
+['Прямые 3x + 2y = 12 и 2x − y = 1 пересекаются в точке','(2; 3)¦(3; 2)¦(0; 6)¦(1; 1)',0],
+['В клетке кролики и фазаны: всего 10 голов и 28 ног. Сколько кроликов?','3¦4¦5¦6',1],
+['При каком a система x + y = 3, 2x + 2y = a имеет бесконечно много решений?','0¦3¦5¦6',3]
+],[
+['Является ли пара (2; −1) решением системы 3x + 2y = 4, x − y = 3?','Подставим: 3·2 + 2·(−1) = 6 − 2 = 4 ✓; 2 − (−1) = 3 ✓. Оба равенства верны.','да'],
+['Решите систему способом подстановки: y = 2x, x + y = 9.','Подставим y: x + 2x = 9, 3x = 9, x = 3. Тогда y = 6.','(3; 6)'],
+['Решите систему способом сложения: x + y = 8, x − y = 2.','Сложим: 2x = 10, x = 5. Тогда y = 8 − 5 = 3.','(5; 3)'],
+['Решите систему: 3x + 2y = 12, 2x − y = 1.','Умножим второе на 2: 4x − 2y = 2. Сложим с первым: 7x = 14, x = 2. Тогда y = 2·2 − 1 = 3.','(2; 3)'],
+['Периметр прямоугольника 20 см, одна сторона на 2 см больше другой. Найдите стороны.','a + b = 10, a − b = 2. Сложим: 2a = 12, a = 6, b = 4.','6 см и 4 см'],
+['Решите систему: {x|2} + {y|3} = 3, x − y = 1.','Умножим первое на 6: 3x + 2y = 18. Из второго x = y + 1: 3y + 3 + 2y = 18, 5y = 15, y = 3, x = 4. Проверка: {4|2} + {3|3} = 3 ✓.','(4; 3)']
+],[
+['Решение системы x + y = 6, x − y = 2','(4; 2)¦(2; 4)¦(3; 3)¦(5; 1)',0],
+['Сколько решений у системы x + y = 1, x + y = 2?','одно¦два¦ни одного¦бесконечно много',2],
+['x = 2y и x + y = 9. Найди y','2¦3¦6¦9',1]
+]]);
+
+QZ.alg.push([[
+['При каком x не имеет смысла {x + 1|x − 2}?','−1¦2¦0¦1',1],
+['Сократи {6a|9}','{2a|3}¦{a|3}¦{2a|9}¦{6|9}',0],
+['{a|x} + {b|x} =','{a + b|2x}¦{a + b|x}¦{ab|x}¦{ab|x²}',1],
+['Сократи {x² − 9|x + 3}','x + 3¦x − 9¦x − 3¦{x|3}',2],
+['{2|x}·{x²|6} =','{x²|3}¦{3|x}¦{x|3}¦{x|6}',2],
+['{a|b} : {c|d} =','{ac|bd}¦{ad|bc}¦{ab|cd}¦{bc|ad}',1],
+['Упрости {x² − 4|x² − 2x}','{x − 2|x}¦{x + 2|x − 2}¦{x + 2|x}¦1',2],
+['{1|x} + {2|x + 1} =','{3|2x + 1}¦{3x + 1|x(x + 1)}¦{3|x(x + 1)}¦{x + 3|x(x + 1)}',1],
+['({2a|b})³ =','{6a|3b}¦{2a³|b³}¦{8a³|b³}¦{8a³|b}',2],
+['Упрости {a|a − 2} − {4|a² − 2a}','{a − 2|a}¦{a − 4|a − 2}¦{a|a − 2}¦{a + 2|a}',3]
+],[
+['Найдите значение дроби {x − 3|x + 1} при x = 5.','{5 − 3|5 + 1} = {2|6} = {1|3}.','{1|3}'],
+['Сократите дробь {12a³b|18ab²}.','Делим числитель и знаменатель на 6ab: {12a³b|18ab²} = {2a²|3b}.','{2a²|3b}'],
+['Выполните сложение: {3|a} + {5|a}.','Знаменатели одинаковые, складываем числители: {3 + 5|a} = {8|a}.','{8|a}'],
+['Сократите дробь {x² − 25|x² + 5x}.','Числитель: (x − 5)(x + 5). Знаменатель: x(x + 5). Сокращаем (x + 5).','{x − 5|x}'],
+['Выполните действия: {x|x − 3} − {9|x² − 3x}.','x² − 3x = x(x − 3). Общий знаменатель x(x − 3): {x·x − 9|x(x − 3)} = {(x − 3)(x + 3)|x(x − 3)} = {x + 3|x}.','{x + 3|x}'],
+['Упростите: {a² − b²|a} : {a + b|a²}.','Деление заменяем умножением: {(a − b)(a + b)|a}·{a²|a + b}. Сокращаем (a + b) и a: получаем a(a − b).','a(a − b)']
+],[
+['Сократить {5x|10}','{x|2}¦{x|5}¦{5x|2}¦{1|2}',0],
+['Дробь {3|x − 4} не имеет смысла при x =','3¦−4¦4¦0',2],
+['{2|a}·{a|3} =','{2|3}¦{a|5}¦{2a²|3}¦{3|2}',0]
+]]);
+QZ.alg.push([[
+['√[49] =','7¦−7¦24,5¦49',0],
+['Какое число иррациональное?','√[16]¦√[2]¦0,5¦{1|3}',1],
+['Значение √[(−5)²]','−5¦25¦5¦не существует',2],
+['√[4]·√[9] =','13¦36¦5¦6',3],
+['Выражение √[x] имеет смысл при','x < 0¦x ≥ 0¦x > 0¦любом x',1],
+['√[72] =','2√[6]¦6√[2]¦36√[2]¦12√[2]',1],
+['{6|√[3]} =','3√[2]¦{√[3]|2}¦2√[3]¦2',2],
+['Сравни √[5] и 2','меньше¦равно¦больше¦нельзя сравнить',2],
+['Сколько решений у уравнения x² = 7?','0¦1¦2¦3',2],
+['(√[7] − √[3])(√[7] + √[3]) =','10¦2√[2]¦√[10]¦4',3]
+],[
+['Вычислите: √[36] + √[0,25].','√[36] = 6, √[0,25] = 0,5. Сумма 6,5.','6,5'],
+['Найдите значение выражения 3√[16] − √[49].','3·4 − 7 = 12 − 7 = 5.','5'],
+['Упростите: √[50] − 2√[8].','√[50] = 5√[2], 2√[8] = 2·2√[2] = 4√[2]. Разность: √[2].','√[2]'],
+['Освободитесь от иррациональности в знаменателе: {10|√[5]}.','Умножаем числитель и знаменатель на √[5]: {10√[5]|5} = 2√[5].','2√[5]'],
+['Решите уравнение x² − 13 = 0.','x² = 13, значит x = √[13] или x = −√[13].','x = ±√[13]'],
+['Упростите: (√[5] − 2)² + 4√[5].','(√[5] − 2)² = 5 − 4√[5] + 4 = 9 − 4√[5]. Прибавляем 4√[5]: остаётся 9.','9']
+],[
+['√[2]·√[8] =','4¦√[10]¦16¦10',0],
+['√[10] лежит между числами','2 и 3¦3 и 4¦4 и 5¦9 и 10',1],
+['{√[27]|√[3]} =','9¦3¦27¦{1|3}',1]
+]]);
+QZ.alg.push([[
+['Какое неравенство верно?','−3 > −1¦−3 < −1¦3 < −5¦0 > 2',1],
+['Решение x > 2 записывается как','(−∞; 2)¦(2; +∞)¦[2; +∞)¦(−∞; 2]',1],
+['2x < 8 ⇒','x < 16¦x > 4¦x < 4¦x < 6',2],
+['При делении неравенства на отрицательное число знак','не меняется¦меняется на противоположный¦исчезает¦становится «=»',1],
+['x ≤ 5 — это промежуток','(−∞; 5)¦(5; +∞)¦(−∞; 5]¦[5; +∞)',2],
+['Реши 3 − 2x > 7','x > −2¦x < −2¦x < 2¦x > 2',1],
+['Реши 2x + 1 ≤ 9','x ≥ 4¦x ≤ 4¦x ≤ 5¦x ≤ 10',1],
+['Реши систему x > 1, x < 4','(1; 4)¦(−∞; 1)¦(4; +∞)¦решений нет',0],
+['Реши −1 < 2x + 3 < 7','(−1; 7)¦(2; 4)¦(−4; 4)¦(−2; 2)',3],
+['Сколько целых решений у неравенства −2 ≤ x < 3?','4¦5¦6¦3',1]
+],[
+['Сравните числа −7 и −5.','На числовой прямой −7 левее −5, значит −7 меньше −5.','−7 < −5'],
+['Решите неравенство 5x − 3 > 12.','5x > 15, делим на 5: x > 3.','x > 3, т. е. (3; +∞)'],
+['Решите неравенство 4 − 3x ≥ 10.','−3x ≥ 6. Делим на −3 и меняем знак: x ≤ −2.','x ≤ −2'],
+['Решите систему неравенств: 2x − 1 > 3, x + 4 < 10.','Первое: 2x > 4, x > 2. Второе: x < 6. Общая часть: от 2 до 6.','(2; 6)'],
+['Решите неравенство 3(x − 2) − 2(x + 1) < 5.','3x − 6 − 2x − 2 < 5, x − 8 < 5, x < 13.','x < 13'],
+['При каких x имеет смысл √[2x − 6]?','Подкоренное выражение неотрицательно: 2x − 6 ≥ 0, 2x ≥ 6, x ≥ 3.','x ≥ 3']
+],[
+['Решение неравенства 2x > 6','x > 3¦x < 3¦x > 12¦x > 4',0],
+['−4x < 8 ⇒','x < −2¦x > 2¦x > −2¦x < 2',2],
+['Множество решений x ≥ −1','(−1; +∞)¦[−1; +∞)¦(−∞; −1]¦(−∞; −1)',1]
+]]);
+QZ.alg.push([[
+['y = 2x + 1. Найди y при x = 3','6¦7¦5¦9',1],
+['Графиком линейной функции является','парабола¦гипербола¦прямая¦ломаная',2],
+['График y = x² называется','прямая¦парабола¦гипербола¦окружность',1],
+['Где прямая y = 3x − 2 пересекает ось y?','(0; −2)¦(0; 3)¦(−2; 0)¦(2; 0)',0],
+['Какая функция убывает?','y = 2x¦y = x + 5¦y = −3x + 1¦y = {x|2}',2],
+['Прямые y = 2x + 1 и y = kx − 3 параллельны при k =','1¦−2¦2¦3',2],
+['Область определения y = √[x − 1]','x > 1¦x ≥ 1¦x ≥ 0¦x ≤ 1',1],
+['Через какую точку проходит график y = {6|x}?','(2; 3)¦(2; 4)¦(3; 3)¦(6; 6)',0],
+['Точка пересечения y = x + 2 и y = 2x − 1','(1; 3)¦(2; 4)¦(5; 3)¦(3; 5)',3],
+['График y = x² + 3 получается из y = x² сдвигом','вправо на 3¦вверх на 3¦вниз на 3¦влево на 3',1]
+],[
+['Найдите значение функции y = −2x + 5 при x = 4.','y = −2·4 + 5 = −8 + 5 = −3.','−3'],
+['Принадлежит ли точка A(2; 7) графику функции y = 3x + 1?','Подставим x = 2: y = 3·2 + 1 = 7. Совпало с ординатой точки.','да'],
+['Постройте график функции y = 2x − 1: найдите две точки.','x = 0: y = −1. x = 1: y = 1. Через эти точки проводим прямую.','(0; −1) и (1; 1)'],
+['Найдите точки пересечения графика y = 4x − 8 с осями координат.','С осью x: y = 0, 4x = 8, x = 2. С осью y: x = 0, y = −8.','(2; 0) и (0; −8)'],
+['Найдите точку пересечения графиков y = 2x + 1 и y = −x + 7.','2x + 1 = −x + 7, 3x = 6, x = 2. Тогда y = 2·2 + 1 = 5.','(2; 5)'],
+['Задайте линейную функцию, график которой параллелен y = 3x − 1 и проходит через точку (1; 5).','Параллельные прямые имеют одинаковое k = 3. Подставим точку: 5 = 3·1 + b, откуда b = 2.','y = 3x + 2']
+],[
+['Функция y = {k|x} — это','прямая¦парабола¦гипербола¦луч',2],
+['Значение y = x² при x = −3','−9¦9¦6¦−6',1],
+['Коэффициент k в y = kx + b отвечает за','сдвиг по оси y¦наклон прямой¦ширину параболы¦ничего',1]
+]]);
+
+QZ.chem.push([[
+['Что такое вещество?','предмет¦то, из чего состоят физические тела¦явление¦прибор',1],
+['Что из перечисленного — физическое тело?','железо¦вода¦гвоздь¦кислород',2],
+['Какое свойство физическое?','горючесть¦цвет¦способность ржаветь¦разложение',1],
+['Какое явление химическое?','плавление льда¦ржавление железа¦испарение воды¦растворение сахара',1],
+['Признак химической реакции','изменение формы¦измельчение¦выделение газа¦кипение воды',2],
+['Молекулы состоят из','атомов¦только ядер¦только электронов¦смесей',0],
+['Какое явление физическое?','горение свечи¦скисание молока¦таяние снега¦гниение листьев',2],
+['Как правильно нагревать пробирку?','отверстием на соседа¦отверстием от себя и соседей¦заглядывая сверху в отверстие¦закрыв пробкой',1],
+['Почему плавление льда — физическое явление?','выделяется газ¦образуется новое вещество¦состав вещества не меняется¦меняется цвет',2],
+['Какой ряд содержит только вещества?','гвоздь, стакан, ручка¦сахар, вода, железо¦книга, стол, соль¦ложка, медь, мел',1]
+],[
+['Назовите физические свойства воды при обычных условиях.','Вода — бесцветная жидкость без запаха. Кипит при 100 °C, замерзает при 0 °C, плотность около 1 г/мл.','бесцветная жидкость без запаха, tкип = 100 °C, tпл = 0 °C'],
+['Приведите по три примера физических тел и веществ, из которых они состоят.','Тело — вещество: гвоздь — железо, стакан — стекло, ложка — алюминий.','гвоздь — железо, стакан — стекло, ложка — алюминий'],
+['Определите, какие явления физические, а какие химические: а) кипение воды, б) горение бензина, в) скисание молока, г) таяние льда.','Если новое вещество не образуется — явление физическое (а, г). Если образуется — химическое (б, в).','физические: а, г; химические: б, в'],
+['Назовите признаки химической реакции и приведите пример.','Признаки: изменение цвета, запах, осадок, выделение газа, свет, тепло. Пример — ржавление гвоздя: появляется бурый налёт.','цвет, запах, осадок, газ, свет, тепло; пример — ржавление'],
+['Почему в лаборатории нельзя пробовать вещества на вкус и вдыхать их, наклонившись над сосудом?','Многие вещества ядовиты и едки, их пары раздражают дыхательные пути. Нюхать нужно, направляя воздух от сосуда ладонью.','вещества могут быть ядовитыми; нюхать — только ладонью к себе']
+]]);
+QZ.chem.push([[
+['Что относится к чистым веществам?','воздух¦морская вода¦дистиллированная вода¦молоко',2],
+['Какая смесь однородная?','вода и песок¦раствор соли¦вода и масло¦глина в воде',1],
+['Как отделить железные опилки от песка?','фильтрованием¦магнитом¦выпариванием¦дистилляцией',1],
+['Каким способом можно получить соль из раствора?','выпариванием¦отстаиванием¦магнитом¦фильтрованием',0],
+['Суспензия — это смесь','жидкости с газом¦твёрдого вещества с жидкостью¦двух газов¦двух твёрдых веществ',1],
+['Эмульсия — это смесь','мела с водой¦масла с водой¦дыма с воздухом¦двух металлов',1],
+['Спирт и воду (разные температуры кипения) разделяют','фильтрованием¦дистилляцией¦магнитом¦отстаиванием',1],
+['Что остаётся на фильтре при фильтровании смеси воды и песка?','вода¦песок¦соль¦воздух',1],
+['Какая смесь неоднородная?','воздух¦бронза¦туман¦уксус',2],
+['Как разделить смесь песка, соли и железных опилок?','магнит → вода и фильтр → выпаривание¦выпаривание → магнит¦фильтрование → магнит¦только дистилляция',0]
+],[
+['Приведите по два примера однородных и неоднородных смесей.','Однородные не имеют видимых границ между частицами, неоднородные имеют.','однородные: воздух, раствор соли; неоднородные: вода с песком, молоко'],
+['Какие способы разделения смесей нужны для смесей: а) песок и вода, б) соль и вода, в) железо и сера?','а) песок нерастворим — фильтруем. б) вода испаряется — выпариваем. в) железо притягивается — берём магнит.','а) фильтрование, б) выпаривание, в) магнит'],
+['Предложите, как разделить смесь железных и древесных опилок и поваренной соли.','1) Магнитом убираем железо. 2) Заливаем водой: соль растворится, древесные опилки всплывут. 3) Фильтруем. 4) Фильтрат выпариваем — остаётся соль.','магнит → вода → фильтрование → выпаривание'],
+['Чем чистые вещества отличаются от смесей? Почему водопроводная вода — смесь?','Чистое вещество состоит из одного вещества, смесь — из нескольких. В водопроводной воде растворены соли и газы.','в смеси несколько веществ; в воде из крана растворены соли и газы'],
+['Опишите, как устроена установка для дистилляции и как она работает.','Колба с жидкостью нагревается, пар идёт в холодильник, охлаждается, превращается в жидкость и стекает в приёмник.','нагрев → пар → холодильник → чистая жидкость в приёмнике']
+]]);
+QZ.chem.push([[
+['Знак элемента железа','Fe¦F¦Ir¦Zn',0],
+['Сколько атомов водорода в H₂SO₄?','1¦2¦4¦6',1],
+['Как читается CO₂?','ко-два¦цэ-два-о¦цэ-о-два¦цэ-о',2],
+['Индекс в формуле — это','цифра перед формулой¦маленькая цифра после знака¦знак элемента¦скобка',1],
+['Сколько атомов кислорода в 3H₂O?','1¦3¦6¦9',1],
+['Сколько всего атомов в формуле Zn(OH)₂?','3¦4¦5¦6',2],
+['Расставь коэффициенты: Al + O₂ = Al₂O₃','2, 3, 1¦4, 3, 2¦2, 2, 1¦3, 2, 2',1],
+['Что означает стрелка ↓ в ZnCl₂ + 2NaOH = Zn(OH)₂↓ + 2NaCl?','выделяется газ¦выпадает осадок¦идёт нагревание¦выделяется свет',1],
+['К какому типу относится реакция 2H₂O = 2H₂ + O₂?','соединение¦разложение¦замещение¦обмен',1],
+['Сколько атомов кислорода в 2Al₂(SO₄)₃?','12¦18¦24¦6',2]
+],[
+['Прочитайте формулы: H₂SO₄, Zn(OH)₂, NaCl.','Читаем знаки по очереди, индексы произносим числительными.','аш-два-эс-о-четыре; цинк-о-аш-дважды; натрий-хлор'],
+['Определите число атомов каждого элемента: а) Ca(OH)₂, б) Al₂(SO₄)₃.','Индекс за скобкой умножает всё внутри. а) O: 1·2 = 2, H: 1·2 = 2. б) S: 1·3 = 3, O: 4·3 = 12.','а) Ca — 1, O — 2, H — 2; б) Al — 2, S — 3, O — 12'],
+['Расставьте коэффициенты: Fe + O₂ → Fe₂O₃.','Кислорода справа 3, слева 2 — общее 6: 3O₂ и 2Fe₂O₃. Теперь железа справа 4, ставим 4Fe.','4Fe + 3O₂ = 2Fe₂O₃'],
+['Расставьте коэффициенты: а) H₂ + Cl₂ → HCl; б) CH₄ + O₂ → CO₂ + H₂O.','а) Хлора и водорода справа должно быть по 2: 2HCl. б) H: 4 слева, значит 2H₂O; тогда O справа 2 + 2 = 4, ставим 2O₂.','а) H₂ + Cl₂ = 2HCl; б) CH₄ + 2O₂ = CO₂ + 2H₂O'],
+['Определите тип реакций: а) 2Mg + O₂ = 2MgO, б) Zn + 2HCl = ZnCl₂ + H₂↑, в) CaCO₃ = CaO + CO₂↑.','а) из двух веществ одно. б) простое вещество замещает часть сложного. в) из одного вещества два.','а) соединение; б) замещение; в) разложение']
+]]);
+QZ.chem.push([[
+['Валентность водорода','I¦II¦III¦IV',0],
+['Валентность кислорода в оксидах','I¦II¦III¦IV',1],
+['Формула оксида алюминия','AlO¦Al₂O₃¦Al₃O₂¦AlO₃',1],
+['Валентность S в SO₃','II¦IV¦VI¦III',2],
+['Оксид — это','сложное вещество из двух элементов, один из которых кислород¦простое вещество¦соединение с водородом¦любая смесь',0],
+['Валентность Fe в Fe₂O₃','II¦III¦VI¦I',1],
+['Формула оксида фосфора(V)','PO₅¦P₅O₂¦P₂O₅¦P₂O₃',2],
+['Как называется CO₂?','оксид углерода(II)¦оксид углерода(IV)¦оксид кислорода¦угарный газ',1],
+['Валентность Mn в Mn₂O₇','II¦V¦VII¦XIV',2],
+['В каком веществе валентность элемента (не кислорода) равна IV?','CaO¦Na₂O¦SiO₂¦Al₂O₃',2]
+],[
+['Определите валентности элементов в соединениях: HCl, H₂O, NH₃, CH₄.','У водорода I. Значит: Cl — I; в H₂O у O две связи с H; в NH₃ у N три; в CH₄ у C четыре.','⟦I|H⟧⟦I|Cl⟧, ⟦I|H⟧₂⟦II|O⟧, ⟦III|N⟧⟦I|H⟧₃, ⟦IV|C⟧⟦I|H⟧₄'],
+['Составьте формулы по валентности: Al(III) и O(II); Ca(II) и Cl(I).','Находим общее кратное и делим. Al, O: 6 → Al₂O₃. Ca, Cl: 2 → индекс у Cl равен 2.','⟦III|Al⟧₂⟦II|O⟧₃; ⟦II|Ca⟧⟦I|Cl⟧₂'],
+['Определите валентность серы в SO₂ и SO₃.','У O валентность II. SO₂: 2·2 = 4 — значит S(IV). SO₃: 2·3 = 6 — значит S(VI).','⟦IV|S⟧⟦II|O⟧₂ и ⟦VI|S⟧⟦II|O⟧₃'],
+['Назовите оксиды: Na₂O, FeO, Fe₂O₃, SO₃.','Название: «оксид» + элемент. Если валентность переменная, указываем её.','оксид натрия, оксид железа(II), оксид железа(III), оксид серы(VI)'],
+['Составьте формулы оксидов: а) азота(V), б) хрома(III), в) меди(II).','а) N(V), O(II): общее кратное 10 → N₂O₅. б) 6 → Cr₂O₃. в) валентности равны → CuO.','а) N₂O₅; б) Cr₂O₃; в) CuO']
+]]);
+
+// ---------- Новые темы: тесты и задания ----------
+QZ.alg.splice(6,0,[[
+['Дискриминант уравнения x² − 5x + 6 = 0 равен','1¦25¦11¦−1',0],
+['Корни уравнения x² − 9 = 0','3¦−3¦±3¦±9',2],
+['Сколько корней имеет квадратное уравнение при D < 0?','0¦1¦2¦3',0],
+['По теореме Виета для x² − 7x + 12 = 0 сумма корней равна','12¦7¦−7¦−12',1],
+['Корни уравнения x² − 5x + 6 = 0','2 и 3¦−2 и −3¦1 и 6¦−1 и 6',0],
+['Сколько корней у уравнения x⁴ − 5x² + 4 = 0?','2¦3¦4¦1',2],
+['Корни уравнения x(x − 3)(x + 2) = 0','0, 3, 2¦0, 3, −2¦0, −3, 2¦3, −2',1],
+['При каком a уравнение x² − 6x + a = 0 имеет один корень?','3¦6¦9¦12',2],
+['Для 2x² − 8x + 6 = 0 сумма и произведение корней равны','4 и 3¦8 и 6¦−4 и 3¦4 и 6',0],
+['Сколько действительных корней у x⁴ + x² + 1 = 0?','0¦2¦4¦1',0]
+],[
+['Решите уравнения: x² − 16 = 0 и x² + 6x = 0.','x² = 16 → x = ±4. Второе: x(x + 6) = 0 → x = 0 или x = −6.','x = ±4; x = 0, x = −6'],
+['Решите уравнение x² − 5x + 6 = 0.','D = 25 − 24 = 1, x = {5 ± 1|2}: x = 3 или x = 2.','2 и 3'],
+['Решите уравнение 2x² − 3x − 2 = 0.','D = 9 + 16 = 25, x = {3 ± 5|4}: x = 2 или x = −0,5.','2 и −0,5'],
+['Решите уравнение x⁴ − 10x² + 9 = 0.','Пусть t = x²: t² − 10t + 9 = 0, t = 1 или t = 9. Тогда x = ±1 или x = ±3.','x = ±1; ±3'],
+['Решите уравнение x³ + x² − 4x − 4 = 0.','Группировка: x²(x + 1) − 4(x + 1) = (x + 1)(x² − 4) = (x + 1)(x − 2)(x + 2).','x = −1; 2; −2'],
+['При каком k один из корней уравнения x² − kx + 12 = 0 равен 3? Найдите второй корень.','Подставим x = 3: 9 − 3k + 12 = 0, k = 7. По Виету произведение корней 12, значит второй корень 12 : 3 = 4.','k = 7; x₂ = 4']
+],[
+['Корни уравнения x² + 2x − 3 = 0','1 и −3¦−1 и 3¦1 и 3¦−1 и −3',0],
+['Какая замена подходит для x⁴ − 3x² − 4 = 0?','t = x²¦t = x⁴¦t = x¦t = √[x]',0],
+['Действительный корень уравнения x³ − 8 = 0','2¦−2¦8¦4',0]
+]]);
+QZ.chem.push([[
+['Ar(O) =','8¦16¦32¦12',1],
+['Mr(H₂O) =','16¦18¦20¦17',1],
+['Mr(CO₂) =','28¦32¦44¦60',2],
+['Ar(Cl), которую используют в расчётах, равна','35¦36¦35,5¦37',2],
+['Mr(NaCl) =','58,5¦58¦59¦57,5',0],
+['Mr(H₂SO₄) =','82¦96¦98¦100',2],
+['Массовая доля водорода в воде H₂O примерно равна','5,6 %¦11,1 %¦12,5 %¦88,9 %',1],
+['Mr(Ca(OH)₂) =','56¦57¦74¦114',2],
+['Массовая доля кислорода в CO₂ примерно равна','27,3 %¦50 %¦72,7 %¦36 %',2],
+['Сколько граммов соли в 250 г раствора с массовой долей 4 %?','4 г¦10 г¦25 г¦100 г',1]
+],[
+['Вычислите относительные молекулярные массы H₂SO₄ и Ca(OH)₂.','Mr(H₂SO₄) = 2·1 + 32 + 4·16 = 98. Mr(Ca(OH)₂) = 40 + 2·(16 + 1) = 74.','Mr(H₂SO₄) = 98; Mr(Ca(OH)₂) = 74'],
+['Вычислите массовые доли водорода и кислорода в воде.','Mr(H₂O) = 18. ω(H) = {2|18} ≈ 0,111 = 11,1 %. ω(O) = {16|18} ≈ 0,889 = 88,9 %. Проверка: в сумме 100 %.','ω(H) ≈ 11,1 %; ω(O) ≈ 88,9 %'],
+['Найдите массовую долю азота в аммиаке NH₃.','Mr(NH₃) = 14 + 3·1 = 17. ω(N) = {14|17} ≈ 0,824 = 82,4 %.','≈ 82,4 %'],
+['Нужно приготовить 200 г раствора соли с массовой долей 5 %. Сколько соли и воды надо взять?','m(соли) = 200·0,05 = 10 г. m(воды) = 200 − 10 = 190 г.','10 г соли и 190 г воды'],
+['Массовая доля серы в оксиде равна 40 %, Mr оксида 80. Определите формулу оксида.','Масса серы в молекуле: 80·0,4 = 32, это один атом S. На кислород приходится 80 − 32 = 48, то есть {48|16} = 3 атома O.','SO₃']
+]]);
+QZ.chem.push([[
+['Вещества, вступающие в реакцию, называют','продуктами¦реагентами¦катализаторами¦растворителями',1],
+['Какой признак указывает на химическую реакцию?','изменение размера¦образование осадка¦измельчение¦замерзание воды',1],
+['Реакция 2Mg + O₂ = 2MgO — это реакция','разложения¦соединения¦замещения¦обмена',1],
+['Реакция CaCO₃ = CaO + CO₂ — это реакция','соединения¦разложения¦замещения¦обмена',1],
+['Катализатор — это вещество, которое','расходуется в реакции¦ускоряет реакцию, но не расходуется¦замедляет реакцию, расходуясь¦всегда выделяет газ',1],
+['Какая реакция эндотермическая?','горение метана¦разложение CaCO₃ при нагревании¦ржавление гвоздя¦горение магния',1],
+['Zn + 2HCl = ZnCl₂ + H₂↑ — это реакция','соединения¦замещения¦обмена¦разложения',1],
+['Из 40 г веществ образовалось 25 г продукта A и ещё продукт B. Масса B равна','15 г¦65 г¦25 г¦40 г',0],
+['NaOH + HCl = NaCl + H₂O — это реакция','соединения¦разложения¦замещения¦обмена',3],
+['Сумма коэффициентов в уравнении 4Al + 3O₂ = 2Al₂O₃ равна','7¦8¦9¦10',2]
+],[
+['Назовите три признака химических реакций и приведите по примеру.','Осадок: CuSO₄ + 2NaOH = Cu(OH)₂↓ + Na₂SO₄. Газ: Zn + 2HCl = ZnCl₂ + H₂↑. Цвет: железный гвоздь в растворе CuSO₄ покрывается красной медью.','осадок, газ, изменение цвета (также запах, свет, тепло)'],
+['Расставьте коэффициенты и определите тип: а) Fe + Cl₂ → FeCl₃; б) Cu(OH)₂ → CuO + H₂O; в) Al + HCl → AlCl₃ + H₂.','а) Cl: 2 и 3 → общее 6: 2Fe + 3Cl₂ = 2FeCl₃, соединение. б) Уже уравнено: из одного вещества два, разложение. в) 2Al + 6HCl = 2AlCl₃ + 3H₂↑, замещение.','а) 2Fe + 3Cl₂ = 2FeCl₃; б) Cu(OH)₂ = CuO + H₂O; в) 2Al + 6HCl = 2AlCl₃ + 3H₂↑'],
+['При разложении 36 г воды получили 4 г водорода. Сколько граммов кислорода образовалось?','По закону сохранения массы масса продуктов равна массе исходного вещества: m(O₂) = 36 − 4 = 32 г.','32 г'],
+['Чем экзотермические реакции отличаются от эндотермических? Приведите по примеру.','В экзотермических тепло выделяется (CH₄ + 2O₂ = CO₂ + 2H₂O + Q), в эндотермических поглощается (CaCO₃ = CaO + CO₂↑ − Q).','экзо — тепло выделяется (горение); эндо — поглощается (разложение CaCO₃)'],
+['Составьте уравнения: а) горение магния; б) разложение оксида ртути(II) на ртуть и кислород; в) взаимодействие цинка с соляной кислотой.','а) Mg + O₂ → MgO; кислорода 2 и 1, значит 2Mg + O₂ = 2MgO. б) 2HgO = 2Hg + O₂↑. в) Zn + 2HCl = ZnCl₂ + H₂↑.','а) 2Mg + O₂ = 2MgO; б) 2HgO = 2Hg + O₂↑; в) Zn + 2HCl = ZnCl₂ + H₂↑']
+]]);
+// ---------- Хардкор (алгебра) ----------
+var HC=[
+[
+['Докажите, что при любом натуральном n значение выражения (n + 3)² − (n − 1)² делится на 8.','Разность квадратов: (n + 3 − n + 1)(n + 3 + n − 1) = 4·(2n + 2) = 8(n + 1). Один из множителей равен 8.','8(n + 1) — делится на 8'],
+['Найдите значение выражения a² + b², если a + b = 5 и ab = 6.','Из (a + b)² = a² + 2ab + b² получаем a² + b² = (a + b)² − 2ab = 25 − 12 = 13.','13'],
+['Известно, что x + {1|x} = 3. Найдите x² + {1|x²}.','Возведём равенство в квадрат: x² + 2 + {1|x²} = 9. Значит x² + {1|x²} = 9 − 2 = 7.','7'],
+['Найдите значение суммы {1|1·2} + {1|2·3} + {1|3·4} + … + {1|99·100}.','Каждую дробь представим как разность: {1|k(k + 1)} = {1|k} − {1|k + 1}. Все слагаемые, кроме первого и последнего, сокращаются: 1 − {1|100} = {99|100}.','{99|100} = 0,99']
+],[
+['Вычислите {6⁵·3⁻⁴|2⁴·9⁻¹}.','6⁵ = 2⁵·3⁵ и 9⁻¹ = 3⁻². Числитель: 2⁵·3⁵·3⁻⁴ = 2⁵·3. Знаменатель: 2⁴·3⁻². Делим: 2⁵⁻⁴·3¹⁺² = 2·27 = 54.','54'],
+['Сравните числа 2³⁰ и 3²⁰.','2³⁰ = (2³)¹⁰ = 8¹⁰, а 3²⁰ = (3²)¹⁰ = 9¹⁰. Основание 9 больше основания 8 при одинаковом показателе.','2³⁰ &lt; 3²⁰'],
+['Докажите, что при любом натуральном n значение выражения 7ⁿ⁺² − 7ⁿ делится на 48.','7ⁿ⁺² = 7ⁿ·49, поэтому 7ⁿ·49 − 7ⁿ = 7ⁿ(49 − 1) = 48·7ⁿ.','48·7ⁿ — делится на 48'],
+['Найдите x, если 3ˣ⁺¹ + 3ˣ = 108.','3ˣ⁺¹ = 3·3ˣ, тогда 3·3ˣ + 3ˣ = 4·3ˣ = 108, 3ˣ = 27 = 3³.','x = 3']
+],[
+['Разложите на множители: x⁴ + 4.','Дополним до полного квадрата: x⁴ + 4 = (x² + 2)² − 4x². Разность квадратов: (x² + 2 − 2x)(x² + 2 + 2x).','(x² − 2x + 2)(x² + 2x + 2)'],
+['Упростите: (a + b + c)² − (a − b − c)².','Пусть b + c = m. Тогда (a + m)² − (a − m)² = 4am.','4a(b + c)'],
+['Докажите, что выражение x² − 6x + 10 принимает только положительные значения.','Выделим квадрат: x² − 6x + 9 + 1 = (x − 3)² + 1. Квадрат неотрицателен, значит выражение не меньше 1.','(x − 3)² + 1 ≥ 1 &gt; 0'],
+['Найдите наименьшее значение выражения x² + 4x + y² − 6y + 20.','Выделим квадраты: (x + 2)² + (y − 3)² + 20 − 4 − 9 = (x + 2)² + (y − 3)² + 7. Минимум достигается при x = −2, y = 3.','7']
+],[
+['Решите систему: x² − y² = 15, x + y = 5.','x² − y² = (x − y)(x + y), значит (x − y)·5 = 15 и x − y = 3. Сложим с x + y = 5: 2x = 8, x = 4, y = 1.','(4; 1)'],
+['Решите систему: {2|x} + {3|y} = 2, {4|x} − {3|y} = 1.','Сложим уравнения: {6|x} = 3, значит x = 2. Подставим в первое: 1 + {3|y} = 2, {3|y} = 1, y = 3.','(2; 3)'],
+['При каком значении a система x + 2y = 5, 3x + ay = 15 имеет бесконечно много решений?','Второе уравнение должно получаться умножением первого на 3: 3x + 6y = 15. Значит a = 6.','a = 6'],
+['Сумма цифр двузначного числа равна 11. Если цифры поменять местами, получится число на 27 больше. Найдите число.','Пусть a — десятки, b — единицы, a + b = 11. (10b + a) − (10a + b) = 9(b − a) = 27, b − a = 3. Складываем: 2b = 14, b = 7, a = 4.','47']
+],[
+['Упростите: {x² + 2x − 15|x² − 9}.','x² + 2x − 15 = (x + 5)(x − 3), x² − 9 = (x − 3)(x + 3). Сокращаем (x − 3).','{x + 5|x + 3}'],
+['Упростите: ({1|x − 1} − {1|x + 1}) : {2|x² − 1}.','В скобках: {(x + 1) − (x − 1)|x² − 1} = {2|x² − 1}. Делим эту дробь на такую же — получаем 1.','1'],
+['Найдите значение выражения {a² − 4|a² + 4a + 4} при a = 2026.','Числитель (a − 2)(a + 2), знаменатель (a + 2)². После сокращения {a − 2|a + 2} = {2024|2028} = {506|507}.','{506|507}'],
+['Докажите, что при x &gt; 0 верно неравенство x + {1|x} ≥ 2.','Рассмотрим разность: x + {1|x} − 2 = {x² − 2x + 1|x} = {(x − 1)²|x}. Числитель неотрицателен, знаменатель положителен, значит дробь не меньше нуля.','{(x − 1)²|x} ≥ 0']
+],[
+['Упростите: √[7 + 4√[3]].','Представим подкоренное выражение как квадрат: 7 + 4√[3] = 4 + 4√[3] + 3 = (2 + √[3])². Тогда корень равен 2 + √[3].','2 + √[3]'],
+['Вычислите: {1|√[2] + 1} + {1|√[3] + √[2]} + {1|2 + √[3]}.','Избавимся от иррациональности: {1|√[2] + 1} = √[2] − 1, {1|√[3] + √[2]} = √[3] − √[2], {1|2 + √[3]} = 2 − √[3]. Корни сокращаются, остаётся −1 + 2 = 1.','1'],
+['Сравните числа √[17] + √[5] и 2√[11].','Оба числа положительны, сравним квадраты: (√[17] + √[5])² = 22 + 2√[85], (2√[11])² = 44. Сравним 2√[85] и 22, то есть √[85] и 11. Так как 85 &lt; 121, √[85] &lt; 11, значит левая часть меньше.','√[17] + √[5] &lt; 2√[11]'],
+['Упростите: √[(3 − √[10])²] + √[(√[10] − 4)²].','Корень из квадрата равен модулю. √[10] ≈ 3,16, поэтому 3 − √[10] &lt; 0 и |3 − √[10]| = √[10] − 3; √[10] − 4 &lt; 0 и |√[10] − 4| = 4 − √[10]. Сумма: 1.','1']
+],[
+['Решите уравнение (x² − 3x)² − 2(x² − 3x) − 8 = 0.','Пусть t = x² − 3x. Тогда t² − 2t − 8 = 0, t = 4 или t = −2. Из x² − 3x = 4: x = 4 или x = −1. Из x² − 3x = −2: x = 1 или x = 2.','x = −1; 1; 2; 4'],
+['Решите уравнение x⁴ − 13x² + 36 = 0.','Пусть t = x²: t² − 13t + 36 = 0, D = 25, t = {13 ± 5|2} = 9 или 4. Тогда x = ±3 или x = ±2.','x = ±2; ±3'],
+['При каких a уравнение x² − 2ax + a + 2 = 0 имеет единственный корень?','Единственный корень при D = 0. D = 4a² − 4(a + 2) = 4(a² − a − 2). Из a² − a − 2 = 0 получаем a = 2 или a = −1.','a = 2 или a = −1'],
+['Разность корней уравнения x² + px + 12 = 0 равна 1. Найдите p.','Корни x и x + 1: x(x + 1) = 12, x² + x − 12 = 0, x = 3 или −4. Корни 3 и 4 (сумма 7, p = −7) или −4 и −3 (сумма −7, p = 7).','p = −7 или p = 7']
+],[
+['Решите двойное неравенство −3 &lt; {2x − 1|3} ≤ 5.','Умножим на 3: −9 &lt; 2x − 1 ≤ 15. Прибавим 1: −8 &lt; 2x ≤ 16. Разделим на 2: −4 &lt; x ≤ 8.','(−4; 8]'],
+['Решите систему: {x − 1|2} − {x + 1|3} &gt; 0, 3x − 7 &lt; 11.','Первое: умножим на 6, 3(x − 1) − 2(x + 1) &gt; 0, x − 5 &gt; 0, x &gt; 5. Второе: 3x &lt; 18, x &lt; 6. Общая часть: от 5 до 6.','(5; 6)'],
+['При каких a уравнение x² − 4x + a = 0 имеет два различных корня?','Нужно D &gt; 0: 16 − 4a &gt; 0, откуда a &lt; 4.','a &lt; 4'],
+['Докажите, что при a &gt; 0 и b &gt; 0 верно неравенство {a + b|2} ≥ √[ab].','a + b − 2√[ab] = (√[a] − √[b])² ≥ 0. Значит a + b ≥ 2√[ab], откуда {a + b|2} ≥ √[ab].','(√[a] − √[b])² ≥ 0']
+],[
+['Найдите площадь треугольника, ограниченного осями координат и графиком y = −2x + 6.','С осью y: x = 0, y = 6. С осью x: y = 0, x = 3. Прямоугольный треугольник с катетами 3 и 6: S = {3·6|2} = 9.','9'],
+['Прямая y = kx + b проходит через точки A(1; 3) и B(3; 7). Найдите k, b и значение функции при x = 10.','k = {7 − 3|3 − 1} = 2. Подставим A: 3 = 2·1 + b, b = 1. Функция y = 2x + 1, при x = 10: y = 21.','k = 2, b = 1; y(10) = 21'],
+['При каких m прямая y = mx − 2 и парабола y = x² имеют ровно одну общую точку?','Приравняем: x² − mx + 2 = 0. Одна общая точка при D = 0: m² − 8 = 0, m = ±2√[2].','m = ±2√[2]'],
+['Найдите вершину параболы y = x² − 4x + 7 и наименьшее значение функции.','Выделим квадрат: y = (x − 2)² + 3. Вершина (2; 3), ветви вверх, наименьшее значение 3.','вершина (2; 3), наименьшее значение 3']
+]];
+HC.forEach(function(h,i){QZ.alg[i][3]=h});
+
+// Перемешиваем варианты ответов, чтобы верный ответ не стоял всегда на одном месте
+(function(){function sh(it){var o=it[1].split('¦'),r=o[it[2]],k;for(var i=o.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=o[i];o[i]=o[j];o[j]=t}it[1]=o.join('¦');it[2]=o.indexOf(r)}
+['alg','chem'].forEach(function(k){QZ[k].forEach(function(t){t[0].forEach(sh);(t[2]||[]).forEach(sh)})})})();
+// ---------- Листопад и Хэллоуин ----------
+(function(){var b=document.getElementById('leaves'),c=['#d97706','#ea580c','#b45309','#dc2626','#ca8a04','#9a3412'],em=['🎃','👻','🦇','🍂','🍁'],l='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1C6 5 3 11 7 17c1.5 2 3 3.5 4 5 .2.3.8.3 1 0 1-1.5 2.5-3 4-5 4-6 1-12-4-16z"/><path d="M12 5v16" stroke="rgba(0,0,0,.25)" fill="none"/></svg>',n=innerWidth<600?16:30;
+for(var i=0;i<n;i++){var e=document.createElement('div'),s=e.style;e.className='leaf';s.left=Math.random()*100+'%';s.setProperty('--s',18+Math.random()*26+'px');s.setProperty('--c',c[i%6]);s.setProperty('--d',9+Math.random()*9+'s');s.setProperty('--sw',2+Math.random()*3+'s');s.setProperty('--delay',-Math.random()*15+'s');e.innerHTML=i%5==4?'<span>'+em[(i/5|0)%5]+'</span>':l;b.appendChild(e)}})();
+(function(){var r=document.documentElement,b=document.getElementById('th'),mq=matchMedia('(prefers-color-scheme: dark)');function dk(){return r.dataset.theme?r.dataset.theme=='dark':mq.matches}function ic(){b.textContent=dk()?'🍂':'🎃'}ic();b.onclick=function(){r.dataset.theme=dk()?'light':'dark';ic();if(window.rg)rg()}})();
+// Дроби и корни: {числитель|знаменатель}, √[подкоренное]
+function M(s){var a;do{a=s;s=s.replace(/⟦([^|⟧]*)\|([^⟧]*)⟧/g,'<span class=vl><i>$1</i><span>$2</span></span>').replace(/√\[([^\[\]]*)\]/g,'<span class=rt>√<span class=rv>$1</span></span>').replace(/\{([^{}|]*)\|([^{}]*)\}/g,'<span class=fr><span>$1</span><span>$2</span></span>')}while(s!=a);return s}
+// ---------- Навигация ----------
+var $=function(s){return document.querySelector(s)},q=function(s){return [].slice.call(document.querySelectorAll(s))},st=['home'],sub,tj,i=0,N=0;
+function view(v){q('.view').forEach(function(e){e.classList.toggle('on',e.id==v)})}
+function go(v){st.push(v);view(v)}
+function back(){if(st.length>1){st.pop();view(st[st.length-1])}}
+function openSub(k){sub=k;$('#list').innerHTML=D[k].map(function(t,j){return '<a class="btn t '+k+'" style="--i:'+j+'" data-t="'+j+'"><b>'+(IC[k][j]||j+1)+'</b>'+t[0]+'</a>'}).join('');go('sub')}
+function openT(){var t=D[sub][tj];$('#tt').textContent=t[0];$('#tr').innerHTML=t[1].map(function(s){return '<div class=sl><div class=card>'+M(s)+'</div></div>'}).join('');N=t[1].length;$('#dots').innerHTML=new Array(N+1).join('<i></i>');go('top');slide(0);initG();var h=$('#hd');if(h)h.onclick=function(){$('#el').classList.toggle('hid')}}
+function slide(n){i=Math.max(0,Math.min(N-1,n));$('#tr').style.transform='translateX('+-i*100+'%)';q('#dots i').forEach(function(d,k){d.classList.toggle('a',k==i)})}
+document.addEventListener('click',function(e){var a=e.target.closest('[data-go]'),b=e.target.closest('[data-t]');if(a)openSub(a.dataset.go);else if(b)openM(+b.dataset.t);else if(e.target.closest('.back'))back();else if(e.target.closest('#pv'))slide(i-1);else if(e.target.closest('#nx'))slide(i+1)});
+document.addEventListener('keydown',function(e){if($('#top').classList.contains('on')&&e.target.tagName!='INPUT'){if(e.key=='ArrowRight')slide(i+1);if(e.key=='ArrowLeft')slide(i-1)}if(e.key=='Escape')back()});
+var sx=0,sk=false;
+$('#vp').addEventListener('touchstart',function(e){sk=!!e.target.closest('.nosw');sx=e.touches[0].clientX},{passive:true});
+$('#vp').addEventListener('touchend',function(e){if(sk)return;var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)slide(d<0?i+1:i-1)});
+// ---------- Тест и задания ----------
+var IC={alg:['🔤','🚀','🧱','🧷','🍰','🌱','🧮','⚖️','📈'],chem:['🧪','🥤','🔣','🔗','⚖️','🔥']},LET='АБВГ',PH={alg:{ok:['Ого! 😮','Не верю! 😳'],no:['Кринж 😬']},chem:{ok:['Ты молодец! 🎉','Умочка! 🧠'],no:['Ты не умочка 😬','В 3 часа приходи в четверг 🕒','Минус уважение от Анжелики Валерьевны 📉']}},qi=0,qs=0;
+function pk(a){return a[Math.floor(Math.random()*a.length)]}
+function cur(){return QZ[sub][tj]}
+function openM(j){tj=j;$('#tmt').textContent=D[sub][j][0];$('#tml').innerHTML='<a class="btn '+sub+'" style="--i:0" data-m="th">📖 Теория</a><a class="btn '+sub+'" style="--i:1" data-m="qz">📝 Тест</a>';go('tm')}
+function openQ(){$('#qzt').textContent=D[sub][tj][0];go('qz');tab('q')}
+function tab(t){q('.tabs button').forEach(function(b){b.classList.toggle('on',b.dataset.tab==t)});if(t=='q'){qi=0;qs=0;showQ()}else showW();$('#qb').scrollTop=0}
+function opts(it){return it[1].split('¦').map(function(o,k){return '<button class=opt data-k='+k+'><b>'+LET[k]+'</b><span>'+M(o)+'</span></button>'}).join('')}
+function showQ(){var it=cur()[0][qi];if(!it)return endQ();$('#qb').innerHTML='<div class=card><div class=qh>Вопрос '+(qi+1)+' из 10'+(qi>4?' · посложнее 🔥':'')+'</div><div class=bar><i style="width:'+qi*10+'%"></i></div><p class=qq>'+M(it[0])+'</p><div class=opts>'+opts(it)+'</div><div class=fbw></div></div>'}
+function endQ(){var m=qs>=9?'Легенда! 🏆':qs>=7?'Отлично! 🔥':qs>=5?'Неплохо, повтори теорию 📖':'Загляни в теорию ещё раз 📖';$('#qb').innerHTML='<div class="card res"><div class=big>'+qs+' / 10</div><h3 style="display:inline-block">'+m+'</h3><div class=bar><i style="width:'+qs*10+'%"></i></div><button class=nx2 data-act=again>🔁 Пройти ещё раз</button><button class=nx2 data-act=tasks>✍️ К заданиям</button></div>'}
+function tk(t,k,h){return '<div class="card task'+(h?' hc':'')+'"><div class=th><span>'+(h?'Хардкор ':'Задание ')+(k+1)+'</span><em>'+(h?'🔥🔥🔥🔥 самое сложное':k<2?'⭐ лёгкое':k<4?'⭐⭐ среднее':'⭐⭐⭐ сложнее')+'</em></div><p>'+M(t[0])+'</p><button class="sm solb">💡 Решение</button><div class=sol hidden>'+M(t[1])+'<div class=ans>Ответ: <mark>'+M(t[2])+'</mark></div></div></div>'}
+function showW(){var c=cur(),H=c[3]||[],E=c[2]||[];$('#qb').innerHTML='<p class=note>Задания составлены в духе школьного учебника. Номера из учебника не подписаны — сверь с книгой.</p>'+c[1].map(function(t,k){return tk(t,k)}).join('')+(H.length?'<h3 class=sec>🔥 Хардкор</h3>'+H.map(function(t,k){return tk(t,k,1)}).join(''):'')+(E.length?'<h3 class=sec>🧩 Тестовые задания</h3>'+E.map(function(it,k){return '<div class="card mc" data-e='+k+'><div class=th><span>Тест '+(k+1)+'</span></div><p class=qq>'+M(it[0])+'</p><div class=opts>'+opts(it)+'</div><div class=fbw></div></div>'}).join(''):'')}
+document.addEventListener('click',function(e){var t=e.target,x=t.closest('[data-m]'),o=t.closest('.opt');
+if(x){x.dataset.m=='th'?openT():openQ();return}
+if(o&&!o.classList.contains('lock')){var c=o.closest('.mc'),it=c?cur()[2][+c.dataset.e]:cur()[0][qi],box=o.closest('.card'),ok=+o.dataset.k==it[2];
+box.querySelectorAll('.opt').forEach(function(z){z.classList.add('lock');if(+z.dataset.k==it[2])z.classList.add('ok')});if(!ok)o.classList.add('no');
+box.querySelector('.fbw').innerHTML='<div class="fb '+(ok?'ok':'no')+'">'+pk(PH[sub][ok?'ok':'no'])+'</div>'+(c?'':'<button class=nx2 data-act=next>'+(qi==9?'Результат →':'Дальше →')+'</button>');if(!c&&ok)qs++;return}
+if(t.closest('.solb')){var b=t.closest('.solb'),s=b.parentNode.querySelector('.sol');s.hidden=!s.hidden;b.textContent=s.hidden?'💡 Решение':'🙈 Скрыть решение';return}
+x=t.closest('[data-act]');if(x){var a=x.dataset.act;if(a=='next'){qi++;showQ()}else if(a=='again')tab('q');else if(a=='tasks')tab('w');return}
+x=t.closest('[data-tab]');if(x)tab(x.dataset.tab)});
+// ---------- Построитель графиков ----------
+function fn(s){
+  s=s.toLowerCase().replace(/^\s*(y|f\(x\))\s*=/,'');
+  var sup={'⁰':0,'¹':1,'²':2,'³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9,'⁻':'-'};
+  s=s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g,function(m){return '^('+m.split('').map(function(c){return sup[c]}).join('')+')'})
+   .replace(/[−–—]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/π/g,'pi').replace(/,/g,'.')
+   .replace(/√\s*(\d+\.?\d*|x)/g,'sqrt($1)').replace(/√/g,'sqrt');
+  for(var i=0;i<4;i++)s=s.replace(/\|([^|]+)\|/g,'abs($1)');
+  if(!s.trim()||/[^0-9x+\-*\/^().\s]/.test(s.replace(/sqrt|abs|sin|cos|tan|ln|log|exp|pi/g,'')))return null;
+  s=s.replace(/(^|[(+\-*\/])\s*-/g,'$1-1*').replace(/pi/g,'(Math.PI)')
+   .replace(/(sqrt|abs|sin|cos|tan|ln|log|exp)/g,function(m){return 'Math.'+({ln:'log',log:'log10'}[m]||m)})
+   .replace(/(\d|\)|x)\s*(?=x|\(|Math)/g,'$1*').replace(/(x|\))\s*(?=\d)/g,'$1*').replace(/\^/g,'**');
+  try{return new Function('x','return '+s)}catch(e){return null}}
+function fmt(v){return (+v.toFixed(2)).toString().replace('.',',').replace('-','−')}
+function initG(){var c=$('#cv');if(!c)return;
+  var g=c.getContext('2d'),rows=$('#frows'),COL=['#8b5cf6','#f97316','#10b981','#ec4899','#0ea5e9','#eab308','#ef4444','#14b8a6'],sc=45,ox=0,oy=0,W=0,H=0,act=null,mx=null,P={};
+  function dk(){var r=document.documentElement;return r.dataset.theme?r.dataset.theme=='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+  function list(){return [].map.call(rows.children,function(r){var i=r.querySelector('input'),f=fn(i.value);i.classList.toggle('bad',!!i.value.trim()&&!f);return {f:f,col:COL[+r.dataset.c],on:!r.querySelector('.dot').classList.contains('off')}})}
+  function addRow(v){if(rows.children.length>=8)return;var used=[].map.call(rows.children,function(r){return +r.dataset.c}),ci=0;while(used.indexOf(ci)>-1)ci++;
+    var d=document.createElement('div');d.className='frow';d.dataset.c=ci;
+    d.innerHTML='<button class=dot title="Показать / скрыть" style="background:'+COL[ci]+'"></button><span class=fl>y =</span><input class="in fi" spellcheck=false autocomplete=off placeholder="например x² − 4"><button class=rm title="Удалить">✕</button>';
+    d.querySelector('input').value=v||'';rows.appendChild(d);if(!v)d.querySelector('input').focus();draw()}
+  function draw(){var d=window.devicePixelRatio||1,r=c.getBoundingClientRect();if(!r.width)return;
+    if(W!=r.width||H!=r.height){W=r.width;H=r.height;c.width=W*d;c.height=H*d;if(!ox&&!oy){ox=W/2;oy=H/2}}
+    var D=dk(),ink=D?'#e9d5ff':'#3b1409',soft=D?'rgba(255,255,255,.07)':'rgba(120,53,15,.10)',mid=D?'rgba(255,255,255,.16)':'rgba(120,53,15,.22)';
+    g.setTransform(d,0,0,d,0,0);g.shadowBlur=0;
+    var bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,D?'#1d0c30':'#fffaf0');bg.addColorStop(1,D?'#0d0617':'#fde8c8');g.fillStyle=bg;g.fillRect(0,0,W,H);
+    var st=[.1,.2,.5,1,2,5,10,20,50,100,200,500].filter(function(v){return v*sc>=52})[0]||500,ms=st*sc/5>=14?st/5:st,n=Math.round(st/ms);
+    var x0=Math.ceil(-ox/sc/ms),x1=Math.floor((W-ox)/sc/ms),y0=Math.ceil(-(H-oy)/sc/ms),y1=Math.floor(oy/sc/ms);
+    g.lineWidth=1;
+    for(var k=x0;k<=x1;k++){var px=Math.round(ox+k*ms*sc)+.5;g.strokeStyle=k%n?soft:mid;g.beginPath();g.moveTo(px,0);g.lineTo(px,H);g.stroke()}
+    for(k=y0;k<=y1;k++){var py=Math.round(oy-k*ms*sc)+.5;g.strokeStyle=k%n?soft:mid;g.beginPath();g.moveTo(0,py);g.lineTo(W,py);g.stroke()}
+    var ax=Math.min(Math.max(ox,0),W),ay=Math.min(Math.max(oy,0),H);
+    g.strokeStyle=ink;g.fillStyle=ink;g.lineWidth=1.8;g.beginPath();g.moveTo(0,ay);g.lineTo(W-2,ay);g.moveTo(ax,H);g.lineTo(ax,2);g.stroke();
+    g.beginPath();g.moveTo(W-1,ay);g.lineTo(W-10,ay-5);g.lineTo(W-10,ay+5);g.fill();g.beginPath();g.moveTo(ax,1);g.lineTo(ax-5,10);g.lineTo(ax+5,10);g.fill();
+    g.font='600 11px Manrope,system-ui,sans-serif';g.textAlign='center';
+    for(k=x0;k<=x1;k++){if(k%n||!k)continue;var xv=k*ms;g.fillText(fmt(xv),ox+xv*sc,Math.min(Math.max(ay+15,14),H-4))}
+    g.textAlign='right';for(k=y0;k<=y1;k++){if(k%n||!k)continue;var yv=k*ms;g.fillText(fmt(yv),Math.min(Math.max(ax-6,26),W-4),oy-yv*sc+4)}
+    g.font='italic 700 14px Georgia,serif';g.textAlign='left';g.fillText('x',W-16,ay-10);g.fillText('y',ax+9,16);g.font='600 11px Manrope,system-ui,sans-serif';g.fillText('0',ax+5,ay+14);
+    var L=list();g.lineJoin='round';g.lineCap='round';
+    L.forEach(function(o){if(!o.f||!o.on)return;g.strokeStyle=o.col;g.lineWidth=2.8;g.shadowColor=o.col;g.shadowBlur=D?10:0;g.beginPath();var up=false,ps=0;
+      for(var px=0;px<=W;px+=1){var v;try{v=o.f((px-ox)/sc)}catch(e){v=NaN}
+        if(typeof v!='number'||!isFinite(v)||Math.abs(v)>1e5){up=false;continue}var sy=oy-v*sc;if(up&&Math.abs(sy-ps)<H*1.5)g.lineTo(px,sy);else g.moveTo(px,sy);up=true;ps=sy}g.stroke()});
+    g.shadowBlur=0;var gro=$('#gro'),txt='';
+    if(mx!=null){var xv2=(mx-ox)/sc;g.setLineDash([5,5]);g.strokeStyle=mid;g.lineWidth=1.2;g.beginPath();g.moveTo(mx,0);g.lineTo(mx,H);g.stroke();g.setLineDash([]);
+      txt='<span>x = '+fmt(xv2)+'</span>';
+      L.forEach(function(o,i){if(!o.f||!o.on)return;var v;try{v=o.f(xv2)}catch(e){v=NaN}if(typeof v!='number'||!isFinite(v)){txt+=' <span style="color:'+o.col+'">y'+(i+1)+' не определено</span>';return}
+        g.fillStyle=o.col;g.strokeStyle=D?'#fff':'#3b1409';g.lineWidth=2;g.beginPath();g.arc(mx,oy-v*sc,5,0,7);g.fill();g.stroke();txt+=' <span style="color:'+o.col+'">y'+(i+1)+' = '+fmt(v)+'</span>'})}
+    gro.innerHTML=txt||'Наведи курсор на график, чтобы увидеть значения'}
+  function zoom(k,cx,cy){cx=cx==null?W/2:cx;cy=cy==null?H/2:cy;var ns=Math.max(6,Math.min(600,sc*k));k=ns/sc;ox=cx-(cx-ox)*k;oy=cy-(cy-oy)*k;sc=ns;draw()}
+  function ins(t){var i=act&&document.body.contains(act)?act:rows.querySelector('input');if(!i){addRow('');i=rows.querySelector('input')}var a=i.selectionStart,b=i.selectionEnd;if(a==null){a=b=i.value.length}i.value=i.value.slice(0,a)+t+i.value.slice(b);var p=a+(t=='||'?1:t.length);i.focus();try{i.setSelectionRange(p,p)}catch(e){}draw()}
+  rows.addEventListener('input',draw);
+  rows.addEventListener('focusin',function(e){if(e.target.tagName=='INPUT')act=e.target});
+  rows.addEventListener('click',function(e){var d=e.target.closest('.dot'),r=e.target.closest('.rm');if(d){d.classList.toggle('off');draw()}if(r){r.parentNode.remove();draw()}});
+  [].forEach.call(document.querySelectorAll('.keys button,.gbar button,.chips button'),function(b){b.addEventListener('mousedown',function(e){e.preventDefault()});
+    b.onclick=function(){var id=b.id;if(id=='zi')zoom(1.3);else if(id=='zo')zoom(1/1.3);else if(id=='zh'){sc=45;ox=W/2;oy=H/2;draw()}else if(id=='fadd')addRow('');else if(b.dataset.k)ins(b.dataset.k);else if(b.dataset.f)addRow(b.dataset.f)}});
+  c.onpointerdown=function(e){c.setPointerCapture(e.pointerId);P[e.pointerId]=[e.clientX,e.clientY];mx=null;c.style.cursor='grabbing'};
+  c.onpointermove=function(e){var p=P[e.pointerId],r=c.getBoundingClientRect();
+    if(!p){if(e.pointerType=='mouse'){mx=e.clientX-r.left;draw()}return}
+    var ids=Object.keys(P);if(ids.length==1){ox+=e.clientX-p[0];oy+=e.clientY-p[1];P[e.pointerId]=[e.clientX,e.clientY];draw()}
+    else{var o=P[ids.filter(function(k){return k!=e.pointerId})[0]],d0=Math.hypot(p[0]-o[0],p[1]-o[1]),d1=Math.hypot(e.clientX-o[0],e.clientY-o[1]);P[e.pointerId]=[e.clientX,e.clientY];if(d0>0)zoom(d1/d0,(e.clientX+o[0])/2-r.left,(e.clientY+o[1])/2-r.top)}};
+  c.onpointerup=c.onpointercancel=function(e){delete P[e.pointerId];c.style.cursor='grab'};
+  c.onpointerleave=function(){mx=null;draw()};
+  c.onwheel=function(e){e.preventDefault();var r=c.getBoundingClientRect();zoom(e.deltaY<0?1.15:1/1.15,e.clientX-r.left,e.clientY-r.top)};
+  window.rg=draw;if(!window._rs){window._rs=1;addEventListener('resize',function(){window.rg&&rg()})}
+  addRow('x²');addRow('x + 2')}
+</script>
+</body>
+</html>
